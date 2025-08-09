@@ -12,11 +12,26 @@ public class Player extends Entity {
 
     GamePanel gp;
     KeyHandler keyH;
+    public final int screenX;
+    public final int screenY;
+    public int hasKey = 0;
+    int standCounter = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
         this.gp = gp;
         this.keyH = keyH;
+
+        screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
+        screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+        solidArea.width = 32;
+        solidArea.height = 32;
 
         setDefaultValues();
         getPlayerImage();
@@ -25,8 +40,8 @@ public class Player extends Entity {
 
     public void setDefaultValues() {
 
-        x = 100;
-        y = 100;
+        worldX = gp.tileSize * 23;
+        worldY = gp.tileSize * 21;
         speed = 4;
         direction = "down";
     }
@@ -34,14 +49,15 @@ public class Player extends Entity {
 
     public void getPlayerImage() {
         try {
-            up1 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_up1.png"));
-            up2 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_up2.png"));
-            down1 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_down1.png"));
-            down2 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_down2.png"));
-            left1 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_left1.png"));
-            left2 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_left2.png"));
-            right1 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_right1.png"));
-            right2 = ImageIO.read(Player.class.getResourceAsStream("/player/guy_right2.png"));
+            up1 = ImageIO.read(getClass().getResourceAsStream("/player/guy_up1.png"));
+            up2 = ImageIO.read(getClass().getResourceAsStream("/player/guy_up2.png"));
+            down1 = ImageIO.read(getClass().getResourceAsStream("/player/guy_down1.png"));
+            down2 = ImageIO.read(getClass().getResourceAsStream("/player/guy_down2.png"));
+            left1 = ImageIO.read(getClass().getResourceAsStream("/player/guy_left1.png"));
+            left2 = ImageIO.read(getClass().getResourceAsStream("/player/guy_left2.png"));
+            right1 = ImageIO.read(getClass().getResourceAsStream("/player/guy_right1.png"));
+            right2 = ImageIO.read(getClass().getResourceAsStream("/player/guy_right2.png"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,19 +68,42 @@ public class Player extends Entity {
         if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
             if (keyH.upPressed == true) {
                 direction = "up";
-                y -= speed;
             }
             if (keyH.downPressed == true) {
                 direction = "down";
-                y += speed;
             }
             if (keyH.leftPressed == true) {
                 direction = "left";
-                x -= speed;
             }
             if (keyH.rightPressed == true) {
                 direction = "right";
-                x += speed;
+            }
+
+            // CHECK TILE COLLISION
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+
+            // CHECK OBJECT COLLISION
+            int objIndex = gp.cChecker.checkObject(this, true);
+            pickUpObject(objIndex);
+
+            // IF COLLISION IS FALSE, PLAYER CAN MOVE
+            if (collisionOn == false) {
+
+                switch (direction) {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
+                }
             }
 
             spriteCounter++;
@@ -77,6 +116,51 @@ public class Player extends Entity {
                 spriteCounter = 0;
             }
 
+        } else {
+            standCounter++;
+
+            if (standCounter == 20) {
+                spriteNum = 1;
+                standCounter = 0;
+            }
+        }
+
+    }
+
+    public void pickUpObject(int i) {
+
+        if (i != 999) {
+
+            String objectName = gp.obj[i].name;
+
+            switch (objectName) {
+                case "Key":
+                    gp.playSE(1);
+                    hasKey++;
+                    gp.obj[i] = null;
+                    gp.ui.showMessage("You got a key!");
+                    break;
+                case "Door":
+                    if (hasKey > 0) {
+                        gp.playSE(3);
+                        gp.obj[i] = null;
+                        hasKey--;
+                        gp.ui.showMessage("You've opened the door!");
+                    } else {
+                        gp.ui.showMessage("You need to pick up a key!");
+                    }
+                    break;
+                case "Boots":
+                    gp.playSE(2);
+                    speed += 2;
+                    gp.obj[i] = null;
+                    gp.ui.showMessage("Fast as fuck boi!");
+                    break;
+                case "Chest":
+                    gp.ui.gameFinished = true;
+                    gp.stopMusic();
+                    break;
+            }
         }
 
     }
@@ -121,6 +205,9 @@ public class Player extends Entity {
 
 
         }
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        // DEBUGGER, DRAWS PLAYER COLLISION BOX
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.setColor(Color.red);
+        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
 }
