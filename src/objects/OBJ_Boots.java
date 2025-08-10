@@ -1,18 +1,20 @@
+// objects/OBJ_Boots.java
 package objects;
 
+import main.GamePanel;
+
 import javax.imageio.ImageIO;
-import java.io.IOException;
 
 public class OBJ_Boots extends SuperObject {
-
-    public OBJ_Boots() {
-
+    public OBJ_Boots(GamePanel gp) {
         name = "Boots";
-
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/objects/boots.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            image = uTool.scaleImage(
+                    ImageIO.read(getClass().getResourceAsStream("/objects/boots.png")),
+                    gp.tileSize, gp.tileSize
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
