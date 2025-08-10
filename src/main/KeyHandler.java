@@ -52,14 +52,6 @@ public class KeyHandler implements KeyListener {
                 }
             }
 
-            // DEBUG
-            if (code == KeyEvent.VK_T) {
-                if (checkDrawTime == false) {
-                    checkDrawTime = true;
-                } else if (checkDrawTime == true) {
-                    checkDrawTime = false;
-                }
-            }
         }
         // PLAY STATE
         else if (gp.gameState == gp.playState) {
@@ -81,6 +73,14 @@ public class KeyHandler implements KeyListener {
             }
             if (code == KeyEvent.VK_ENTER) {
                 enterPressed = true;
+            }
+            // DEBUG
+            if (code == KeyEvent.VK_T) {
+                if (checkDrawTime == false) {
+                    checkDrawTime = true;
+                } else if (checkDrawTime == true) {
+                    checkDrawTime = false;
+                }
             }
         }
         // PAUSE STATE

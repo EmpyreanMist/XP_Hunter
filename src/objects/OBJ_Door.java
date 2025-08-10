@@ -1,21 +1,23 @@
-// objects/OBJ_Door.java
+// objects/OBJ_Key.java
 package objects;
 
+import entity.Entity;
 import main.GamePanel;
 
-import javax.imageio.ImageIO;
+public class OBJ_Door extends Entity {
 
-public class OBJ_Door extends SuperObject {
     public OBJ_Door(GamePanel gp) {
+        super(gp);
+
         name = "Door";
+        down1 = setup("/objects/door", gp.tileSize, gp.tileSize);
         collision = true;
-        try {
-            image = uTool.scaleImage(
-                    ImageIO.read(getClass().getResourceAsStream("/objects/door.png")),
-                    gp.tileSize, gp.tileSize
-            );
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        solidArea.x = 0;
+        solidArea.y = 16;
+        solidArea.width = 40;
+        solidArea.height = 32;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     }
 }

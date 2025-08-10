@@ -1,36 +1,14 @@
 package objects;
 
+import entity.Entity;
 import main.GamePanel;
-import main.UtilityTool;
 
-import javax.imageio.ImageIO;
-
-public class OBJ_Heart extends SuperObject {
-
-    GamePanel gp;
-    UtilityTool uTool = new UtilityTool();
-
+public class OBJ_Heart extends Entity {
     public OBJ_Heart(GamePanel gp) {
-
-        this.gp = gp;
+        super(gp);
         name = "Heart";
-
-        try {
-            image = uTool.scaleImage(
-                    ImageIO.read(getClass().getResourceAsStream("/objects/heart_full.png")),
-                    gp.tileSize, gp.tileSize
-            );
-            image2 = uTool.scaleImage(
-                    ImageIO.read(getClass().getResourceAsStream("/objects/heart_half.png")),
-                    gp.tileSize, gp.tileSize
-            );
-            image3 = uTool.scaleImage(
-                    ImageIO.read(getClass().getResourceAsStream("/objects/heart_blank.png")),
-                    gp.tileSize, gp.tileSize
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        image = setup("/objects/heart_full", gp.tileSize, gp.tileSize);
+        image2 = setup("/objects/heart_half", gp.tileSize, gp.tileSize);
+        image3 = setup("/objects/heart_blank", gp.tileSize, gp.tileSize);
     }
 }
