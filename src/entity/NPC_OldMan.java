@@ -13,10 +13,10 @@ public class NPC_OldMan extends Entity {
         speed = 1;
 
         getImage();
+        setDialogue();
     }
 
     public void getImage() {
-
         up1 = setup("/npc/oldman_up1");
         up2 = setup("/npc/oldman_up2");
         down1 = setup("/npc/oldman_down1");
@@ -27,14 +27,18 @@ public class NPC_OldMan extends Entity {
         right2 = setup("/npc/oldman_right2");
     }
 
+    public void setDialogue() {
+        dialogues[0] = "Hello traveler!";
+        dialogues[1] = "You must be brave to fight here, mý young boy sad madafakka eller nå";
+        dialogues[2] = "I have cancer";
+        dialogues[3] = "I wish you luck!";
+    }
+
     public void setAction() {
-
         actionLockCounter++;
-
         if (actionLockCounter == 120) {
             Random random = new Random();
-            int i = random.nextInt(100 + 1); // Random number from 1 - 100
-
+            int i = random.nextInt(100 + 1);
             if (i <= 25) {
                 direction = "up";
             }
@@ -47,12 +51,13 @@ public class NPC_OldMan extends Entity {
             if (i > 75 && i <= 100) {
                 direction = "right";
             }
-
             actionLockCounter = 0;
-
         }
-
-
     }
 
+    public void speak() {
+
+        //Do this character specific stuff
+        super.speak();
+    }
 }
