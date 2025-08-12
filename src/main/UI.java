@@ -22,6 +22,8 @@ public class UI {
     public boolean gameFinished = false;
     public String currentDialogue = "";
     public int commandNum = 0;
+    public int slotCol = 0;
+    public int slotRow = 0;
 
     Font titleFont = new Font("Monospaced", Font.BOLD, 96);
     Color titleGreen = new Color(0, 255, 64);
@@ -91,6 +93,7 @@ public class UI {
         // CHARACTER STATE
         if (gp.gameState == gp.characterState) {
             drawCharacterScreen();
+            drawInventory();
         }
     }
 
@@ -402,6 +405,36 @@ public class UI {
         textY += gp.tileSize;
 
         g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 14, null);
+
+
+    }
+
+    public void drawInventory() {
+
+
+        // FRAME
+        int frameX = gp.tileSize * 9;
+        int frameY = gp.tileSize;
+        int framwWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
+        drawSubWindow(frameX, frameY, framwWidth, frameHeight);
+
+        // SLOT
+        final int slotXstart = frameX + 20;
+        final int slotYstsart = frameY + 20;
+        int slotX = slotXstart;
+        int slotY = slotYstsart;
+
+        // CURSOR
+        int cursorX = slotXstart + (gp.tileSize * slotCol);
+        int cursorY = slotYstsart + (gp.tileSize * slotRow);
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
+
+        // DRAW CURSOR
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 
 
     }
