@@ -117,6 +117,7 @@ public class EventHandler {
             gp.playSE(2);
             gp.ui.currentDialogue = "You drank the holy water.\n You have been healed";
             gp.player.life = gp.player.maxLife;
+            gp.aSetter.setMonster();
 
         }
         gp.keyH.enterPressed = false;

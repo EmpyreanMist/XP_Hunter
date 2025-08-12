@@ -104,7 +104,9 @@ public class Player extends Entity {
             attacking();
 
         } else if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
-            if (keyH.upPressed == true || keyH.enterPressed == true) {
+
+            // *** RÖRELSE-RIKTNING (ENTER ska inte styra riktning) ***
+            if (keyH.upPressed == true) {
                 direction = "up";
             }
             if (keyH.downPressed == true) {
@@ -157,15 +159,15 @@ public class Player extends Entity {
                 }
             }
 
-            if (keyH.enterPressed == true && attackCanceled == false) {
+            // *** STARTA ATTACK (utan att omedelbart stänga av den) ***
+            if (keyH.enterPressed == true && attackCanceled == false && attacking == false) {
                 gp.playSE(7);
                 attacking = true;
                 spriteCounter = 0;
             }
 
-            attacking = false;
+            // Läser ENTER en gång per update
             gp.keyH.enterPressed = false;
-
 
             spriteCounter++;
             if (spriteCounter > 12) {
@@ -196,6 +198,11 @@ public class Player extends Entity {
                 invincible = false;
                 invincibleCounter = 0;
             }
+        }
+
+        // *** Återställ attackCanceled när vi inte är i dialogläge ***
+        if (gp.gameState != gp.dialogueState) {
+            attackCanceled = false;
         }
     }
 
@@ -280,7 +287,12 @@ public class Player extends Entity {
         if (i != 999) {
             if (invincible == false) {
                 gp.playSE(6);
-                life -= 1;
+
+                int damage = gp.monster[i].attack - defense;
+                if (damage < 0) {
+                    damage = 0;
+                }
+                life -= damage;
                 invincible = true;
             }
         }
@@ -289,20 +301,46 @@ public class Player extends Entity {
     public void damageMonster(int i) {
 
         if (i != 999) {
-
             if (gp.monster[i].invincible == false) {
 
                 gp.playSE(5);
-                gp.monster[i].life -= 1;
+
+                int damage = attack - gp.monster[i].defense;
+                if (damage < 0) {
+                    damage = 0;
+                }
+
+                gp.monster[i].life -= damage;
+                gp.ui.addMessage(damage + " damage!");
                 gp.monster[i].invincible = true;
                 gp.monster[i].damageReaction();
 
                 if (gp.monster[i].life <= 0) {
                     gp.monster[i].dying = true;
+                    gp.ui.addMessage("Killed the " + gp.monster[i].name + "!");
+                    exp += gp.monster[i].exp;
+                    gp.ui.addMessage("EXP " + gp.monster[i].exp);
+                    checkLevelUp();
                 }
             }
+        }
+    }
 
+    public void checkLevelUp() {
 
+        if (exp >= nextLevelExp) {
+
+            level++;
+            nextLevelExp = nextLevelExp * 2;
+            maxLife += 2;
+            strength++;
+            dexterity++;
+            attack = getAttack();
+            defense = getDefense();
+
+            gp.playSE(8);
+            gp.gameState = gp.dialogueState;
+            gp.ui.currentDialogue = "You are level " + level + " now!\n" + "You feel stronger!";
         }
     }
 
