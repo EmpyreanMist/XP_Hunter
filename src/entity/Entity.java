@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Entity {
 
-    GamePanel gp;
+    protected GamePanel gp;
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2;
     public BufferedImage image, image2, image3;
