@@ -249,6 +249,13 @@ public class Player extends Entity {
             shotAvailableCounter++;
         }
 
+        if(life > maxLife) {
+            life = maxLife;
+        }
+        if(mana > maxMana) {
+            mana = maxMana;
+        }
+
         // *** Återställ attackCanceled när vi inte är i dialogläge ***
         if (gp.gameState != gp.dialogueState) {
             attackCanceled = false;
@@ -311,6 +318,14 @@ public class Player extends Entity {
 
         if (i != 999) {
 
+            // PICKUP ONLY ITEMS
+            if(gp.obj[i].type == type_pickupOnly) {
+
+                gp.obj[i].use(this);
+                gp.obj[i] = null;
+            }
+            // INVENTORY ITEMS
+            else {
             String text;
 
             if(inventory.size() != maxInventorySize) {
@@ -323,9 +338,8 @@ public class Player extends Entity {
             }
             gp.ui.addMessage(text);
             gp.obj[i] = null;
-
+            }
         }
-
     }
 
     public void interactNPC(int i) {
