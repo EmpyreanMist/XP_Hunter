@@ -28,7 +28,13 @@ public class Projectile extends Entity{
                 alive = false;
             }
         }
-        if(user != gp.player) {}
+        if(user != gp.player) {
+            boolean contactPlayer = gp.cChecker.checkPlayer(this);
+            if(gp.player.invincible == false && contactPlayer == true) {
+                damagePlayer(attack);
+                alive = false;
+            }
+        }
 
         switch(direction) {
             case "up": worldY -= speed; break;
@@ -52,5 +58,13 @@ public class Projectile extends Entity{
             }
             spriteCounter = 0;
         }
+    }
+    public boolean haveResource(Entity user) {
+
+        boolean haveResource = false;
+        return haveResource;
+    }
+    public void subtractResource(Entity user) {
+        user.mana -= useCost;
     }
 }

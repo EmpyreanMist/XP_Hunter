@@ -1,6 +1,6 @@
 package main;
 
-public class EventHandler {
+public class  EventHandler {
 
     GamePanel gp;
     EventRect eventRect[][];
@@ -117,6 +117,7 @@ public class EventHandler {
             gp.playSE(2);
             gp.ui.currentDialogue = "You drank the holy water.\n You have been healed";
             gp.player.life = gp.player.maxLife;
+            gp.player.mana = gp.player.maxMana;
             gp.aSetter.setMonster();
 
         }

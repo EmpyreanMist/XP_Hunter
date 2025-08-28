@@ -2,10 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import objects.OBJ_Fireball;
-import objects.OBJ_Key;
-import objects.OBJ_Shield_Wood;
-import objects.OBJ_Sword_Normal;
+import objects.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -49,13 +46,16 @@ public class Player extends Entity {
 
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
-        speed = 4;
+        speed = 6;
         direction = "down";
 
         // PLAYER STATUS
         level = 1;
         maxLife = 6;
         life = maxLife;
+        maxMana = 4;
+        mana = maxMana;
+        ammo = 10;
         strength = 1; // MORE STR = MORE DAMAGE
         dexterity = 1; // MORE DEX = MORE DEFENSE
         exp = 0;
@@ -64,6 +64,9 @@ public class Player extends Entity {
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
         projectile = new OBJ_Fireball(gp);
+/*
+        projectile = new OBJ_Rock(gp);
+*/
         attack = getAttack(); // STR + WEAPON
         defense = getDefense(); // DEX + SHIELD
     }
@@ -217,10 +220,14 @@ public class Player extends Entity {
             gp.keyH.enterPressed = false;
         }
 
-        if(gp.keyH.shotKeyPressed == true && projectile.alive == false && shotAvailableCounter == 30 ) {
+        if(gp.keyH.shotKeyPressed == true && projectile.alive == false
+                && shotAvailableCounter == 30 && projectile.haveResource(this) == true ) {
 
             // SET DEFAULT COORDINATES, DIRECTION AND USER
             projectile.set(worldX, worldY, direction, true, this);
+
+            // SUBTRACT THE COST OF MANA, ARROWS ETC
+            projectile.subtractResource(this);
 
             // ADD IT TO THE LIST
             gp.projectileList.add(projectile);
