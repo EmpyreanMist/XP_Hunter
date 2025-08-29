@@ -116,7 +116,7 @@ public class Entity {
 
     }
 
-    public void dropItem(Entity droppedItem) {
+    public void dropItem(Entity droppedItem)  {
 
         for(int i = 0; i < gp.obj.length; i++) {
             if(gp.obj[i] == null) {
@@ -141,6 +141,7 @@ public class Entity {
         gp.cChecker.checkObject(this, false);
         gp.cChecker.checkEntity(this, gp.npc);
         gp.cChecker.checkEntity(this, gp.monster);
+        gp.cChecker.checkEntity(this, gp.iTile);
         boolean contactPlayer = gp.cChecker.checkPlayer(this);
 
         if (this.type == type_monster && contactPlayer == true) {
