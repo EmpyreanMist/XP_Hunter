@@ -564,8 +564,8 @@ public class Player extends Entity {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
         // DEBUGGER, DRAWS PLAYER COLLISION BOX
-        g2.setColor(Color.red);
-        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+/*        g2.setColor(Color.red);
+        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);*/
 
         // DEBUGGER, SHOWS INVINCIBILITY COUNTER. LASTS 60 FRAMS = 1 SECOND
 /*      g2.setFont(new Font("Arial", Font.PLAIN, 26));
