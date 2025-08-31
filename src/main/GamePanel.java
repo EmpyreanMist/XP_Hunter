@@ -43,6 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
     Sound music = new Sound();
     public UI ui = new UI(this);
     public EventHandler eHandler = new EventHandler(this);
+    Config config = new Config(this);
     Thread gameThread;
 
     // ENTITY AND OBJECT
@@ -84,16 +85,18 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setNPC();
         aSetter.setMonster();
         aSetter.setInteractiveTile();
+        gameState = titleState;
 
 /*
         playMusic(0);
 */
-        gameState = titleState;
 
         tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
         g2 = (Graphics2D)tempScreen.getGraphics();
 
-        setFullScreen();
+        if(fullScreenOn == true) {
+            setFullScreen();
+        }
 
     }
 
