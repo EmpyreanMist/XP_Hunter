@@ -523,7 +523,7 @@ public class UI {
         // SUB WINDOW
         int frameX = gp.tileSize * 6;
         int frameY = gp.tileSize;
-        int frameWidth = gp.tileSize * 8;
+        int frameWidth = gp.tileSize * 10;
         int frameHeight = gp.tileSize * 10;
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
 
@@ -682,7 +682,7 @@ public class UI {
         g2.drawString("Pause", textX, textY); textY += gp.tileSize;
         g2.drawString("Options", textX, textY); textY += gp.tileSize;
 
-        textX = frameX + gp.tileSize * 6;
+        textX = frameX + gp.tileSize * 7;
         textY = frameY + gp.tileSize * 2;
         g2.drawString("WASD", textX, textY); textY += gp.tileSize;
         g2.drawString("ENTER", textX, textY); textY += gp.tileSize;
