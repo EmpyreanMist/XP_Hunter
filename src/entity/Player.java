@@ -2,11 +2,13 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import objects.*;
+import objects.OBJ_Fireball;
+import objects.OBJ_Key;
+import objects.OBJ_Shield_Wood;
+import objects.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public class Player extends Entity {
 
@@ -15,8 +17,6 @@ public class Player extends Entity {
     public final int screenY;
     int standCounter = 0;
     public boolean attackCanceled = false;
-    public ArrayList<Entity> inventory = new ArrayList<>();
-    public final int maxInventorySize = 20;
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
@@ -64,7 +64,7 @@ public class Player extends Entity {
         dexterity = 1; // MORE DEX = MORE DEFENSE
         exp = 0;
         nextLevelExp = 5;
-        coin = 0;
+        coin = 500;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
         projectile = new OBJ_Fireball(gp);
@@ -472,7 +472,7 @@ public class Player extends Entity {
 
     public void selectItem() {
 
-        int itemIndex = gp.ui.getItemIndexOnSLot();
+        int itemIndex = gp.ui.getItemIndexOnSLot(gp.ui.playerSlotCol, gp.ui.playerSlotRow);
 
         if(itemIndex < inventory.size()) {
 

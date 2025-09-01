@@ -1,5 +1,6 @@
 package main;
 
+import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
 import objects.*;
@@ -18,12 +19,12 @@ public class AssetSetter {
 
         int mapNum = 0;
         int i = 0;
-        gp.obj[mapNum][i] = new OBJ_Coin_Brone(gp);
+        gp.obj[mapNum][i] = new OBJ_Coin_Bronze(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 25;
         gp.obj[mapNum][i].worldY = gp.tileSize * 19;
         i++;
 
-        gp.obj[mapNum][i] = new OBJ_Coin_Brone( gp);
+        gp.obj[mapNum][i] = new OBJ_Coin_Bronze( gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 21;
         gp.obj[mapNum][i].worldY = gp.tileSize * 19;
         i++;
@@ -69,7 +70,8 @@ public class AssetSetter {
         i++;
 
         mapNum = 1;
-        gp.npc[mapNum][i] = new NPC_OldMan(gp);
+        i = 0;
+        gp.npc[mapNum][i] = new NPC_Merchant(gp);
         gp.npc[mapNum][i].worldX = gp.tileSize * 12;
         gp.npc[mapNum][i].worldY = gp.tileSize * 7;
         i++;

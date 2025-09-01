@@ -2,7 +2,7 @@ package monster;
 
 import entity.Entity;
 import main.GamePanel;
-import objects.OBJ_Coin_Brone;
+import objects.OBJ_Coin_Bronze;
 import objects.OBJ_Heart;
 import objects.OBJ_ManaCrystal;
 import objects.OBJ_Rock;
@@ -87,7 +87,7 @@ public class MON_GreenSlime extends Entity {
 
         // SET THE MONSTER DROP
         if(i < 50) {
-            dropItem(new OBJ_Coin_Brone(gp));
+            dropItem(new OBJ_Coin_Bronze(gp));
         }
         if(i >= 50 && i < 75) {
             dropItem(new OBJ_Heart(gp));

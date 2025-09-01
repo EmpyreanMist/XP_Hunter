@@ -3,11 +3,11 @@ package objects;
 import entity.Entity;
 import main.GamePanel;
 
-public class OBJ_Coin_Brone extends Entity {
+public class OBJ_Coin_Bronze extends Entity {
 
     GamePanel gp;
 
-    public OBJ_Coin_Brone(GamePanel gp) {
+    public OBJ_Coin_Bronze(GamePanel gp) {
         super(gp);
         this.gp = gp;
 
