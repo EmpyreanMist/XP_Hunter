@@ -33,6 +33,7 @@ public class Entity {
     public boolean dying = false;
     boolean hpBarOn = false;
     public boolean onPath = false;
+    public boolean knockBack = false;
 
     // COUNTER
     public int spriteCounter = 0;
@@ -41,9 +42,11 @@ public class Entity {
     public int shotAvailableCounter = 0;
     int dyingCounter = 0;
     int hpBarCounter = 0;
+    int knockbackCounter = 0;
 
     // CHARACTER ATTRIBUTES
     public String name;
+    public int defaultSpeed;
     public int maxLife;
     public int life;
     public int maxMana;
@@ -62,6 +65,7 @@ public class Entity {
     public Entity currentShield;
     public Projectile projectile;
 
+
     // ITEM ATTRIBUTES
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
@@ -71,6 +75,7 @@ public class Entity {
     public String description = "";
     public int useCost;
     public int price;
+    public int knockBackPower = 0;
 
     //TYPE
     public int type; // 0 = PLAYER, 1 = NPC, 2 = MONSTER
@@ -102,18 +107,10 @@ public class Entity {
         dialogueIndex++;
 
         switch (gp.player.direction) {
-            case "up":
-                direction = "down";
-                break;
-            case "down":
-                direction = "up";
-                break;
-            case "left":
-                direction = "right";
-                break;
-            case "right":
-                direction = "left";
-                break;
+            case "up": direction = "down"; break;
+            case "down": direction = "up"; break;
+            case "left": direction = "right"; break;
+            case "right": direction = "left"; break;
         }
     }
 
@@ -188,6 +185,31 @@ public class Entity {
 
     public void update() {
 
+        if(knockBack == true) {
+
+            checkCollision();
+
+            if(collisionOn == true) {
+                knockbackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed;
+            } else if(collisionOn == false) {
+                switch(gp.player.direction) {
+                    case "up":  worldY -= speed;  break;
+                    case "down":  worldY += speed; break;
+                    case "left": worldX -= speed;   break;
+                    case "right": worldX += speed; break;
+                }
+            }
+            knockbackCounter++;
+            if(knockbackCounter == 10) {
+                knockbackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed;
+            }
+
+        } else {
+
         setAction();
         checkCollision();
 
@@ -200,6 +222,9 @@ public class Entity {
                 case "right": worldX += speed; break;
             }
         }
+
+        }
+
         spriteCounter++;
         if (spriteCounter > 24) {
             if (spriteNum == 1) spriteNum = 2;

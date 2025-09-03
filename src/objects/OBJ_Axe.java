@@ -16,5 +16,6 @@ public class OBJ_Axe extends Entity {
         attackValue = 2;
         description = "[Woodcutter's Axe]\nA bit rusty but can\nstill cut trees";
         price = 75;
+        knockBackPower = 10;
     }
 }
