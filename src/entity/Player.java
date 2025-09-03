@@ -2,10 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import objects.OBJ_Fireball;
-import objects.OBJ_Key;
-import objects.OBJ_Shield_Wood;
-import objects.OBJ_Sword_Normal;
+import objects.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -97,6 +94,7 @@ public class Player extends Entity {
         inventory.add(currentWeapon);
         inventory.add(currentShield);
         inventory.add(new OBJ_Key(gp));
+        inventory.add(new OBJ_Potion_Red(gp));
     }
 
     public int getAttack() {
@@ -187,10 +185,8 @@ public class Player extends Entity {
             // CHECK INTERACTIVE TILE COLLISION
             int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
 
-
             // CHECK EVENT
             gp.eHandler.checkEvent();
-
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (collisionOn == false && keyH.enterPressed == false) {
@@ -210,16 +206,6 @@ public class Player extends Entity {
                         break;
                 }
             }
-
-            // *** STARTA ATTACK (utan att omedelbart stänga av den) ***
-            if (keyH.enterPressed == true && attackCanceled == false && attacking == false) {
-                gp.playSE(7);
-                attacking = true;
-                spriteCounter = 0;
-            }
-
-            // Läser ENTER en gång per update
-            gp.keyH.enterPressed = false;
 
             spriteCounter++;
             if (spriteCounter > 12) {
@@ -241,8 +227,16 @@ public class Player extends Entity {
 
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
-            gp.keyH.enterPressed = false;
         }
+
+        // *** STARTA ATTACK (utan att omedelbart stänga av den) ***
+        if (keyH.enterPressed == true && attackCanceled == false && attacking == false) {
+            gp.playSE(7);
+            attacking = true;
+            spriteCounter = 0;
+        }
+        // Läser ENTER en gång per update
+        gp.keyH.enterPressed = false;
 
         if(gp.keyH.shotKeyPressed == true && projectile.alive == false
                 && shotAvailableCounter == 30 && projectile.haveResource(this) == true ) {
@@ -296,6 +290,7 @@ public class Player extends Entity {
             gp.playSE(12);
         }
     }
+
 
     public void attacking() {
 
@@ -358,6 +353,14 @@ public class Player extends Entity {
                 gp.obj[gp.currentMap][i].use(this);
                 gp.obj[gp.currentMap][i] = null;
             }
+            // OBSTACLE
+            else if(gp.obj[gp.currentMap][i].type == type_obstacle) {
+                if(keyH.enterPressed == true) {
+                    attackCanceled = true;
+                    gp.obj[gp.currentMap][i].interact();
+                }
+            }
+
             // INVENTORY ITEMS
             else {
             String text;
@@ -515,8 +518,9 @@ public class Player extends Entity {
             }
             if(selectedItem.type == type_consumable) {
 
-                selectedItem.use(this);
-                inventory.remove(itemIndex);
+                if(selectedItem.use(this) == true) {
+                    inventory.remove(itemIndex);
+                }
             }
         }
     }

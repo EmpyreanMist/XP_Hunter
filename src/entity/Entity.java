@@ -87,9 +87,34 @@ public class Entity {
     public final int type_shield = 5;
     public final int type_consumable = 6;
     public final int type_pickupOnly = 7;
+    public final int type_obstacle = 8;
 
     public Entity(GamePanel gp) {
         this.gp = gp;
+    }
+
+    public int getLeftX() {
+        return worldX + solidArea.x;
+    }
+
+    public int getRightX() {
+        return worldX + solidArea.x + solidArea.width;
+    }
+
+    public int getTopY() {
+        return worldY + solidArea.y;
+    }
+
+    public int getBottomY() {
+        return worldY + solidArea.y + solidArea.height;
+    }
+
+    public int getCol() {
+        return (worldX + solidArea.x + solidArea.width) / gp.tileSize;
+    }
+
+    public int getRow() {
+        return (worldY + solidArea.y) / gp.tileSize;
     }
 
     public void setAction() {
@@ -107,21 +132,33 @@ public class Entity {
         dialogueIndex++;
 
         switch (gp.player.direction) {
-            case "up": direction = "down"; break;
-            case "down": direction = "up"; break;
-            case "left": direction = "right"; break;
-            case "right": direction = "left"; break;
+            case "up":
+                direction = "down";
+                break;
+            case "down":
+                direction = "up";
+                break;
+            case "left":
+                direction = "right";
+                break;
+            case "right":
+                direction = "left";
+                break;
         }
+    }
+
+    public void interact() {
+
     }
 
     public void checkDrop() {
 
     }
 
-    public void dropItem(Entity droppedItem)  {
+    public void dropItem(Entity droppedItem) {
 
-        for(int i = 0; i < gp.obj[1].length; i++) {
-            if(gp.obj[gp.currentMap][i] == null) {
+        for (int i = 0; i < gp.obj[1].length; i++) {
+            if (gp.obj[gp.currentMap][i] == null) {
                 gp.obj[gp.currentMap][i] = droppedItem;
                 gp.obj[gp.currentMap][i].worldX = worldX; // THE DEAD MONSTERS worldX
                 gp.obj[gp.currentMap][i].worldY = worldY;
@@ -134,23 +171,25 @@ public class Entity {
         Color color = null;
         return color;
     }
+
     public int getParticleSize() {
         int size = 0; // 6 PIXELS
         return size;
     }
+
     public int getParticleSpeed() {
         int speed = 0;
         return speed;
     }
+
     public int getParticleMaxLife() {
         int maxLife = 0;
         return maxLife;
     }
 
-    public void use(Entity entity) {
-
+    public boolean use(Entity entity) {
+        return false;
     }
-
     public void generateParticle(Entity generator, Entity target) {
 
         Color color = generator.getParticleColor();
@@ -164,7 +203,7 @@ public class Entity {
         Particle p4 = new Particle(gp, target, color, size, speed, maxLife, 2, 1);
         gp.particleList.add(p1);
         gp.particleList.add(p2);
-        gp.particleList.add(p3 );
+        gp.particleList.add(p3);
         gp.particleList.add(p4);
     }
 
@@ -185,24 +224,32 @@ public class Entity {
 
     public void update() {
 
-        if(knockBack == true) {
+        if (knockBack == true) {
 
             checkCollision();
 
-            if(collisionOn == true) {
+            if (collisionOn == true) {
                 knockbackCounter = 0;
                 knockBack = false;
                 speed = defaultSpeed;
-            } else if(collisionOn == false) {
-                switch(gp.player.direction) {
-                    case "up":  worldY -= speed;  break;
-                    case "down":  worldY += speed; break;
-                    case "left": worldX -= speed;   break;
-                    case "right": worldX += speed; break;
+            } else if (collisionOn == false) {
+                switch (gp.player.direction) {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
                 }
             }
             knockbackCounter++;
-            if(knockbackCounter == 10) {
+            if (knockbackCounter == 10) {
                 knockbackCounter = 0;
                 knockBack = false;
                 speed = defaultSpeed;
@@ -210,18 +257,26 @@ public class Entity {
 
         } else {
 
-        setAction();
-        checkCollision();
+            setAction();
+            checkCollision();
 
-        // IF COLLISION IS FALSE, NPC CAN MOVE
-        if (collisionOn == false) {
-            switch (direction) {
-                case "up":  worldY -= speed;  break;
-                case "down":  worldY += speed; break;
-                case "left": worldX -= speed;   break;
-                case "right": worldX += speed; break;
+            // IF COLLISION IS FALSE, NPC CAN MOVE
+            if (collisionOn == false) {
+                switch (direction) {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
+                }
             }
-        }
 
         }
 
@@ -238,13 +293,13 @@ public class Entity {
                 invincibleCounter = 0;
             }
         }
-        if(shotAvailableCounter < 30) {
+        if (shotAvailableCounter < 30) {
             shotAvailableCounter++;
         }
     }
 
     public void damagePlayer(int attack) {
-        if(gp.player.invincible == false) {
+        if (gp.player.invincible == false) {
             gp.playSE(6);
 
             int damage = attack - gp.player.defense;
@@ -261,7 +316,7 @@ public class Entity {
         BufferedImage image = null;
 
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY +  gp.player.screenY;
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
         if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
                 worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
@@ -369,7 +424,7 @@ public class Entity {
 
         gp.pFinder.setNodes(startCol, startRow, goalCol, goalRow);
 
-        if(gp.pFinder.search() == true) {
+        if (gp.pFinder.search() == true) {
 
             // Next worldX & worldY
             int nextX = gp.pFinder.pathList.get(0).col * gp.tileSize;
@@ -387,42 +442,38 @@ public class Entity {
                 direction = "down";
             } else if (enTopY >= nextY && enBottomY <= nextY + gp.tileSize) {
                 // left or right
-                if(enLeftX > nextX) {
+                if (enLeftX > nextX) {
                     direction = "left";
                 }
-                if(enLeftX < nextX) {
+                if (enLeftX < nextX) {
                     direction = "right";
                 }
-            }
-            else if (enTopY > nextY && enLeftX > nextX) {
+            } else if (enTopY > nextY && enLeftX > nextX) {
                 // up or left
                 direction = "up";
                 checkCollision();
-                if(collisionOn == true) {
+                if (collisionOn == true) {
                     direction = "left";
                 }
-            }
-            else if (enTopY > nextY && enLeftX < nextX) {
+            } else if (enTopY > nextY && enLeftX < nextX) {
                 // up or right
                 direction = "up";
                 checkCollision();
-                if(collisionOn == true) {
+                if (collisionOn == true) {
                     direction = "right";
                 }
-            }
-            else if (enTopY < nextY && enLeftX > nextX) {
+            } else if (enTopY < nextY && enLeftX > nextX) {
                 // down or left
                 direction = "down";
                 checkCollision();
-                if(collisionOn == true) {
+                if (collisionOn == true) {
                     direction = "left";
                 }
-            }
-            else if (enTopY < nextY && enLeftX < nextX) {
+            } else if (enTopY < nextY && enLeftX < nextX) {
                 // down or right
                 direction = "down";
                 checkCollision();
-                if(collisionOn == true) {
+                if (collisionOn == true) {
                     direction = "right";
                 }
             }
@@ -436,4 +487,45 @@ public class Entity {
         }
 
     }
+
+    public int getDetected(Entity entity, Entity target[][], String targetName) {
+
+        int index = 999;
+
+        // Check the surrounding object
+        int nextWorldX = entity.getLeftX();
+        int nextWorldY = entity.getTopY();
+
+        switch (entity.direction) {
+            case "up":
+                nextWorldY = entity.getTopY() - 1;
+                break;
+            case "down":
+                nextWorldY = entity.getBottomY() + 1;
+                break;
+            case "left":
+                nextWorldX = entity.getLeftX() - 1;
+                break;
+            case "right":
+                nextWorldX = entity.getRightX() + 1;
+                break;
+        }
+
+        int col = nextWorldX / gp.tileSize;
+        int row = nextWorldY / gp.tileSize;
+
+        for (int i = 0; i < target[gp.currentMap].length; i++) {
+            if (target[gp.currentMap][i] != null) {
+                if (target[gp.currentMap][i].getCol() == col &&
+                        target[gp.currentMap][i].getRow() == row &&
+                        target[gp.currentMap][i].name.equals(targetName)) {
+
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return index;
+    }
 }
+
