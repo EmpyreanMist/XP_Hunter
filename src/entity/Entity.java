@@ -76,6 +76,8 @@ public class Entity {
     public int useCost;
     public int price;
     public int knockBackPower = 0;
+    public boolean stackable = false;
+    public int amount = 1;
 
     //TYPE
     public int type; // 0 = PLAYER, 1 = NPC, 2 = MONSTER
@@ -132,18 +134,10 @@ public class Entity {
         dialogueIndex++;
 
         switch (gp.player.direction) {
-            case "up":
-                direction = "down";
-                break;
-            case "down":
-                direction = "up";
-                break;
-            case "left":
-                direction = "right";
-                break;
-            case "right":
-                direction = "left";
-                break;
+            case "up": direction = "down"; break;
+            case "down": direction = "up"; break;
+            case "left": direction = "right"; break;
+            case "right": direction = "left"; break;
         }
     }
 
