@@ -321,32 +321,43 @@ public class UI {
         x += gp.tileSize;
         y += gp.tileSize;
 
-        //AUTOMATICALLY SPLIT DIALOGUE BASED ON CHARACTER LIMIT
+        // AUTOMATICALLY SPLIT DIALOGUE BASED ON CHARACTER LIMIT
         int characterLimit = 30;
-        int characterCount = 0;
-        StringBuilder line = new StringBuilder();
 
-        for (String word : currentDialogue.split(" ")) {
-            characterCount += word.length();
-            if (characterCount < characterLimit) {
-                line.append(word).append(" ");
-            } else if (characterCount != characterLimit) {
-                g2.drawString(line.toString(), x, y);
-                y += 38;
-                characterCount = word.length();
-                line = new StringBuilder(word + " ");
-            } else {
-                line.append(word).append(" ");
-                g2.drawString(line.toString(), x, y);
-                y += 38;
-                characterCount = 0;
-                line = new StringBuilder();
+        // Först splitta på \n för att hantera manuella radbrytningar
+        for (String paragraph : currentDialogue.split("\n")) {
+
+            int characterCount = 0;
+            StringBuilder line = new StringBuilder();
+
+            // Dela upp varje "paragraf" i ord
+            for (String word : paragraph.split(" ")) {
+                characterCount += word.length();
+
+                if (characterCount < characterLimit) {
+                    line.append(word).append(" ");
+                } else {
+                    // Rita den nuvarande raden
+                    g2.drawString(line.toString(), x, y);
+                    y += 38;
+
+                    // Starta ny rad med aktuellt ord
+                    characterCount = word.length();
+                    line = new StringBuilder(word + " ");
+                }
             }
-        }
-        if (!line.equals(new StringBuilder())) {
-            g2.drawString(line.toString(), x, y);
+
+            // Rita sista raden i paragrafen
+            if (line.length() > 0) {
+                g2.drawString(line.toString(), x, y);
+                y += 38;
+            }
+
+            // Lägg till lite extra spacing efter varje \n
+            y += 10;
         }
     }
+
 
     public void drawCharacterScreen() {
 
@@ -504,7 +515,8 @@ public class UI {
 
             // EQUIP CURSOR
             if(entity.inventory.get(i) == entity.currentWeapon ||
-                entity.inventory.get(i) == entity.currentShield) {
+                entity.inventory.get(i) == entity.currentShield ||
+                entity.inventory.get(i) == entity.currentLight) {
                 g2.setColor(new Color(240, 190, 90));
                 g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
             }
