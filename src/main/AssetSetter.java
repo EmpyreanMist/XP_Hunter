@@ -4,6 +4,7 @@ import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
 import monster.MON_Orc;
+import monster.MON_Redslime;
 import objects.*;
 import tile_interactive.IT_DryTree;
 
@@ -160,6 +161,31 @@ public class AssetSetter {
         gp.monster[mapNum][i] = new MON_Orc(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 12;
         gp.monster[mapNum][i].worldY = gp.tileSize * 10;
+        i++;
+
+        gp.monster[mapNum][i] = new MON_Redslime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 34;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 11;
+        i++;
+
+        gp.monster[mapNum][i] = new MON_Redslime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 38;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 15;
+        i++;
+
+        gp.monster[mapNum][i] = new MON_Redslime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 30;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 29;
+        i++;
+
+        gp.monster[mapNum][i] = new MON_Redslime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 13;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 41;
+        i++;
+
+        gp.monster[mapNum][i] = new MON_Redslime(gp);
+        gp.monster[mapNum][i].worldX = gp.tileSize * 27;
+        gp.monster[mapNum][i].worldY = gp.tileSize * 40;
         i++;
 
 

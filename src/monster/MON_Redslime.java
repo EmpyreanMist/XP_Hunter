@@ -1,5 +1,6 @@
 package monster;
 
+
 import entity.Entity;
 import main.GamePanel;
 import objects.OBJ_Coin_Bronze;
@@ -9,24 +10,24 @@ import objects.OBJ_Rock;
 
 import java.util.Random;
 
-public class MON_GreenSlime extends Entity {
+public class MON_Redslime extends Entity {
 
     GamePanel gp;
 
-    public MON_GreenSlime(GamePanel gp) {
+    public MON_Redslime(GamePanel gp) {
         super(gp);
 
         this.gp = gp;
 
         type = type_monster;
-        name = "Green Slime";
-        defaultSpeed = 1;
+        name = "Red Slime";
+        defaultSpeed = 2;
         speed = defaultSpeed;
-        maxLife = 4;
+        maxLife = 8;
         life = maxLife;
-        attack = 5;
+        attack = 7;
         defense = 0;
-        exp = 2;
+        exp = 5;
         projectile = new OBJ_Rock(gp);
 
         solidArea.x = 3;
@@ -41,14 +42,14 @@ public class MON_GreenSlime extends Entity {
     }
 
     public void getImage() {
-        up1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        up2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
-        down1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        down2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
-        left1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        left2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
-        right1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        right2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
+        up1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        up2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
+        down1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        down2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
+        left1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        left2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
+        right1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        right2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
     }
 
     public void setAction() {
@@ -60,6 +61,9 @@ public class MON_GreenSlime extends Entity {
 
             // Search the direction to go
             searchPath(getGoalCol(gp.player), getGoalRow(gp.player));
+
+            // Check if it shoots a projectile
+            checkShootOrNot(200, 30);
 
         } else {
             // Check if it starts chasing

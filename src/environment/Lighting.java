@@ -55,7 +55,6 @@ public class Lighting {
             color[10] = new Color(0, 0, 0, 0.96f);
             color[11] = new Color(0, 0, 0, 0.98f);
 
-
             fraction[0] = 0f;
             fraction[1] = 0.4f;
             fraction[2] = 0.5f;
@@ -135,8 +134,14 @@ public class Lighting {
     public void draw(Graphics2D g2) {
 
 
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha));
-        g2.drawImage(darknessFilter, 0, 0, null);
+        if(gp.currentArea == gp.outside) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha));
+
+        }
+        if(gp.currentArea == gp.outside || gp.currentArea == gp.dungeon) {
+            g2.drawImage(darknessFilter, 0, 0, null);
+
+        }
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
         // DEBUG
