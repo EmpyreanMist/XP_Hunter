@@ -7,13 +7,10 @@ import main.GamePanel;
 public class OBJ_Chest extends Entity {
 
     GamePanel gp;
-    Entity loot;
-    boolean opened = false;
 
-    public OBJ_Chest(GamePanel gp, Entity loot) {
+    public OBJ_Chest(GamePanel gp) {
         super(gp);
         this.gp = gp;
-        this.loot = loot;
 
         type = type_obstacle;
         name = "Chest";
@@ -29,6 +26,11 @@ public class OBJ_Chest extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
     }
+
+    public void setLoot(Entity loot) {
+        this.loot = loot;
+    }
+
     public void interact() {
 
         gp.gameState = gp.dialogueState;

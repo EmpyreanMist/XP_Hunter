@@ -34,10 +34,6 @@ public class Player extends Entity {
         solidArea.height = 32;
 
         setDefaultValues();
-        getImage();
-        getAttackImage();
-        getGuardImage();
-        setItems();
     }
 
 
@@ -45,9 +41,6 @@ public class Player extends Entity {
 
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
-
-/*      worldX = gp.tileSize * 12;
-        worldY = gp.tileSize * 13;*/
 
         defaultSpeed = 4;
         speed = defaultSpeed;
@@ -67,12 +60,19 @@ public class Player extends Entity {
         coin = 500;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
+        currentLight = null;
         projectile = new OBJ_Fireball(gp);
 /*
         projectile = new OBJ_Rock(gp);
 */
-        attack = getAttack(); // STR + WEAPON
-        defense = getDefense(); // DEX + SHIELD
+        attack = getAttack();
+        defense = getDefense();
+
+        getImage();
+        getAttackImage();
+        getGuardImage();
+        setItems();
+
     }
 
     public void setDefaultPositions() {
@@ -83,12 +83,18 @@ public class Player extends Entity {
 
     }
 
-    public void restoreLifeAndMana() {
+    public void restoreStatus() {
 
         life = maxLife;
         mana = maxMana;
         invincible = false;
         transparent = false;
+        attacking = false;
+        guarding = false;
+        knockBack = false;
+        lightUpdated = true;
+
+        speed = defaultSpeed;
     }
 
     public void setItems() {
@@ -111,6 +117,25 @@ public class Player extends Entity {
         return defense = dexterity * currentShield.defenseValue;
     }
 
+    public int getCurrentWeaponSlot() {
+        int currentWeaponSlot = 0;
+        for(int i = 0; i < inventory.size(); i++) {
+            if(inventory.get(i) == currentWeapon) {
+                currentWeaponSlot = i;
+            }
+        }
+        return currentWeaponSlot;
+    }
+
+    public int getCurrentShieldSlot() {
+        int currentShieldSlot = 0;
+        for(int i = 0; i < inventory.size(); i++) {
+            if(inventory.get(i) == currentShield) {
+                currentShieldSlot = i;
+            }
+        }
+        return currentShieldSlot;
+    }
 
     public void getImage() {
 
@@ -497,7 +522,7 @@ public class Player extends Entity {
 
                 currentWeapon = selectedItem;
                 attack = getAttack();
-                getImage();
+                getAttackImage();
 
             }
             if(selectedItem.type == type_shield) {

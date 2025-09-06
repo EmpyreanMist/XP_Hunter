@@ -1,6 +1,7 @@
 package main;
 
 import ai.PathFinder;
+import data.SaveLoad;
 import entity.Entity;
 import entity.Player;
 import environment.EnvironmentManager;
@@ -53,12 +54,13 @@ public class GamePanel extends JPanel implements Runnable {
     Config config = new Config(this);
     public PathFinder pFinder = new PathFinder(this);
     EnvironmentManager eManager = new EnvironmentManager(this);
-    Thread gameThread;
     Map map = new Map(this);
+    SaveLoad saveLoad = new SaveLoad(this);
+    Thread gameThread;
 
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
-    public Entity obj[][] = new Entity[maxMap][10];
+    public Entity obj[][] = new Entity[maxMap][15];
     public Entity npc[][] = new Entity[maxMap][20];
     public Entity monster[][] = new Entity[maxMap][20];
     public InteractiveTile iTile[][] = new InteractiveTile[maxMap][50];
@@ -116,24 +118,21 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
 
-    public void retry() {
+    public void resetGame(boolean restart) {
 
         player.setDefaultPositions();
-        player.restoreLifeAndMana();
+        player.restoreStatus();
         aSetter.setNPC();
         aSetter.setMonster();
 
-    }
+        if(restart == true) {
+            player.setDefaultValues();
+            aSetter.setObject();
 
-    public void restart() {
+            aSetter.setInteractiveTile();
+            eManager.lighting.resetDay();
 
-        player.setDefaultValues();
-        player.setItems();
-        aSetter.setObject();
-        aSetter.setNPC();
-        aSetter.setMonster();
-        aSetter.setInteractiveTile();
-
+        }
     }
 
     public void setFullScreen() {
