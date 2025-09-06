@@ -7,13 +7,16 @@ import main.GamePanel;
 import java.awt.*;
 
 public class OBJ_Rock extends Projectile {
+
+    public static final String objName = "Rock";
+
     GamePanel gp;
 
     public OBJ_Rock(GamePanel gp) {
         super(gp);
         this.gp = gp;
 
-        name = "Rock";
+        name = objName;
         speed = 8;
         maxLife = 80;
         life = maxLife;
