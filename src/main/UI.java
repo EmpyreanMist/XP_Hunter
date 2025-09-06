@@ -31,6 +31,8 @@ public class UI {
     public int subState = 0;
     int counter = 0;
     public Entity npc;
+    int charIndex = 0;
+    String combinedText = "";
 
     Font titleFont = new Font("Monospaced", Font.BOLD, 96);
     Color titleWhite = new Color(255, 255, 255);
@@ -315,6 +317,7 @@ public class UI {
     }
 
     public void drawDialogueScreen() {
+
         int x = (gp.tileSize / 2);
         int y = (int) gp.tileSize / 2;
         int width = gp.screenWidth - gp.tileSize;
@@ -333,6 +336,41 @@ public class UI {
 
             int characterCount = 0;
             StringBuilder line = new StringBuilder();
+
+            if(npc.dialogues[npc.dialogueSet][npc.dialogueIndex] != null) {
+
+               // currentDialogue = npc.dialogues[npc.dialogueSet][npc.dialogueIndex];
+
+                char characters[] = npc.dialogues[npc.dialogueSet][npc.dialogueIndex].toCharArray();
+
+                if(charIndex < characters.length) {
+
+                    gp.playSE(17);
+                    String s = String.valueOf(characters[charIndex]);
+                    combinedText = combinedText + s;
+                    currentDialogue = combinedText;
+                    charIndex++;
+                }
+
+                if(gp.keyH.enterPressed == true) {
+
+                    charIndex = 0;
+                    combinedText = "";
+
+                    if(gp.gameState == gp.dialogueState) {
+
+                        npc.dialogueIndex++;
+                        gp.keyH.enterPressed = false;
+                    }
+                }
+            }
+            else { // If there is no text in the array
+                npc.dialogueIndex = 0;
+
+                if(gp.gameState == gp.dialogueState) {
+                    gp.gameState = gp.playState;
+                }
+            }
 
             // Dela upp varje "paragraf" i ord
             for (String word : paragraph.split(" ")) {
@@ -897,7 +935,7 @@ public class UI {
 
     public void trade_select() {
 
-
+        npc.dialogueSet = 0;
         drawDialogueScreen();
 
         // DRAW WINDOW
@@ -933,8 +971,7 @@ public class UI {
             g2.drawString(">", x - 24, y);
             if(gp.keyH.enterPressed == true) {
                 commandNum = 0;
-                gp.gameState = gp.dialogueState;
-                currentDialogue = "Welcome back!!!";
+                npc.startDialogue(npc, 1);
             }
         }
         y += gp.tileSize;
@@ -983,11 +1020,8 @@ public class UI {
             if(gp.keyH.enterPressed == true) {
                 if(npc.inventory.get(itemIndex).price > gp.player.coin) {
                     subState = 0;
-                    gp.gameState = gp.dialogueState;
-                    currentDialogue = "Don't be such a cheap ass!";
-                    drawDialogueScreen();
-                    return;
-                }
+                    npc.startDialogue(npc, 2);
+                 }
                 else {
                     if(gp.player.canObtainItem(npc.inventory.get(itemIndex)) == true) {
                         gp.player.coin -= npc.inventory.get(itemIndex).price;
@@ -995,8 +1029,7 @@ public class UI {
                     }
                     else {
                         subState = 0;
-                        gp.gameState = gp.dialogueState;
-                        currentDialogue = "Your bags are pretty full...";
+                        npc.startDialogue(npc, 3);
                     }
                 }
             }
@@ -1051,9 +1084,8 @@ public class UI {
                     gp.player.inventory.get(itemIndex) == gp.player.currentShield) {
                         commandNum = 0;
                         subState = 0;
-                        gp.gameState = gp.dialogueState;
-                        currentDialogue = "You are using that...";
-                } else {
+                        npc.startDialogue(npc, 4);
+                 } else {
                     if(gp.player.inventory.get(itemIndex).amount > 1) {
                         gp.player.inventory.get(itemIndex).amount--;
                     }

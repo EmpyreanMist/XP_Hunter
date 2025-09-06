@@ -12,6 +12,8 @@ public class NPC_OldMan extends Entity {
         direction = "down";
         speed = 1;
 
+        dialogueSet = -1;
+
         getImage();
         setDialogue();
     }
@@ -28,10 +30,18 @@ public class NPC_OldMan extends Entity {
     }
 
     public void setDialogue() {
-        dialogues[0] = "Hello traveler!";
-        dialogues[1] = "You must be brave to fight here, mý young boy sad madafakka eller nå";
-        dialogues[2] = "I have cancer";
-        dialogues[3] = "I wish you luck!";
+        dialogues[0][0] = "Hello traveler!";
+        dialogues[0][1] = "So you've come to this island to\nfind the treasure?";
+        dialogues[0][2] = "I used to be a great wizard but now...\nI'm a bit too old for takint an adventure";
+        dialogues[0][3] = "Well, good luck!";
+
+        dialogues[1][0] = "If you become tired, rest at the water";
+        dialogues[1][1] = "However, the monsters reappear if you rest.\nI don't know why but that's how it works";
+        dialogues[1][2] = "In any case, don't push yourself too hard";
+
+        dialogues[2][0] = "I wonder how to open that door...";
+
+
     }
 
     public void setAction() {
@@ -74,8 +84,17 @@ public class NPC_OldMan extends Entity {
     public void speak() {
 
         //Do this character specific stuff
-        super.speak();
 
-        onPath = true;
+        facePlayer();
+        startDialogue(this, dialogueSet);
+
+        dialogueSet++;
+
+        if(dialogues[dialogueSet][0] == null) {
+
+        //  dialogueSet = 0;
+            dialogueSet--;
+        }
+        // onPath = true;
     }
 }
