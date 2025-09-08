@@ -1,8 +1,10 @@
 package monster;
 
+import data.Progress;
 import entity.Entity;
 import main.GamePanel;
 import objects.OBJ_Coin_Bronze;
+import objects.OBJ_Door_Iron;
 import objects.OBJ_Heart;
 import objects.OBJ_ManaCrystal;
 
@@ -30,7 +32,7 @@ public class MON_SkeletonLord extends Entity {
         defense = 2;
         exp = 50;
         knockBackPower = 5;
-
+        sleep = true;
         int size = gp.tileSize * 5;
         solidArea.x = 48;
         solidArea.y = 48;
@@ -45,6 +47,7 @@ public class MON_SkeletonLord extends Entity {
 
         getImage();
         getAttackImage();
+        setDialogue();
 
     }
 
@@ -107,6 +110,13 @@ public class MON_SkeletonLord extends Entity {
         }
     }
 
+    public void setDialogue() {
+
+        dialogues[0][0] = "No one can steal my treasure";
+        dialogues[0][1] = "You will die here!";
+        dialogues[0][2] = "WELCOME TO YOUR NIGHTMARE";
+    }
+
     public void setAction() {
 
         if(inRage == false && life < maxLife / 2) {
@@ -139,6 +149,21 @@ public class MON_SkeletonLord extends Entity {
     }
 
     public void checkDrop() {
+
+        gp.bossBattleOn = false;
+        Progress.skeletonLordDefeated = true;
+
+        // RESTORE THE PREVIOUS MUSIC
+        gp.stopMusic();
+        gp.playMusic(19);
+
+        // REMOVE THE IRON DOORS
+        for(int i = 0; i <  gp.obj[1].length; i++) {
+            if(gp.obj[gp.currentMap][i] != null && gp.obj[gp.currentMap][i].name.equals(OBJ_Door_Iron.objName)) {
+                gp.playSE(21);
+                gp.obj[gp.currentMap][i] = null;
+            }
+        }
 
         // DROP RNG ON DEATH
         int i = new Random().nextInt(100) + 1;

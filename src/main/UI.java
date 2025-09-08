@@ -401,7 +401,7 @@ public class UI {
     public void drawDialogueScreen() {
 
         int x = (gp.tileSize / 2);
-        int y = (int) gp.tileSize / 2;
+        int y = gp.tileSize / 2;
         int width = gp.screenWidth - gp.tileSize;
         int height = 4 * gp.tileSize;
         drawSubWindow(x, y, width, height);
@@ -410,23 +410,18 @@ public class UI {
         x += gp.tileSize;
         y += gp.tileSize;
 
-        // AUTOMATICALLY SPLIT DIALOGUE BASED ON CHARACTER LIMIT
         int characterLimit = 30;
 
-        // Först splitta på \n för att hantera manuella radbrytningar
         for (String paragraph : currentDialogue.split("\n")) {
 
             int characterCount = 0;
             StringBuilder line = new StringBuilder();
 
-            if(npc.dialogues[npc.dialogueSet][npc.dialogueIndex] != null) {
-
-               // currentDialogue = npc.dialogues[npc.dialogueSet][npc.dialogueIndex];
+            if (npc.dialogues[npc.dialogueSet][npc.dialogueIndex] != null) {
 
                 char characters[] = npc.dialogues[npc.dialogueSet][npc.dialogueIndex].toCharArray();
 
-                if(charIndex < characters.length) {
-
+                if (charIndex < characters.length) {
                     gp.playSE(17);
                     String s = String.valueOf(characters[charIndex]);
                     combinedText = combinedText + s;
@@ -434,53 +429,49 @@ public class UI {
                     charIndex++;
                 }
 
-                if(gp.keyH.enterPressed == true) {
-
+                if (gp.keyH.enterPressed == true) {
                     charIndex = 0;
                     combinedText = "";
 
-                    if(gp.gameState == gp.dialogueState) {
-
+                    if (gp.gameState == gp.dialogueState || gp.gameState == gp.cutsceneState) {
                         npc.dialogueIndex++;
                         gp.keyH.enterPressed = false;
                     }
                 }
             }
-            else { // If there is no text in the array
+            else {
                 npc.dialogueIndex = 0;
 
-                if(gp.gameState == gp.dialogueState) {
+                if (gp.gameState == gp.dialogueState) {
                     gp.gameState = gp.playState;
+                }
+                if (gp.gameState == gp.cutsceneState) {
+                    gp.csManager.scenePhase++;
                 }
             }
 
-            // Dela upp varje "paragraf" i ord
             for (String word : paragraph.split(" ")) {
                 characterCount += word.length();
 
                 if (characterCount < characterLimit) {
                     line.append(word).append(" ");
                 } else {
-                    // Rita den nuvarande raden
                     g2.drawString(line.toString(), x, y);
                     y += 38;
-
-                    // Starta ny rad med aktuellt ord
                     characterCount = word.length();
                     line = new StringBuilder(word + " ");
                 }
             }
 
-            // Rita sista raden i paragrafen
             if (line.length() > 0) {
                 g2.drawString(line.toString(), x, y);
                 y += 38;
             }
 
-            // Lägg till lite extra spacing efter varje \n
             y += 10;
         }
     }
+
 
 
     public void drawCharacterScreen() {

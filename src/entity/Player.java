@@ -53,11 +53,11 @@ public class Player extends Entity {
         maxMana = 4;
         mana = maxMana;
         ammo = 10;
-        strength = 5; // MORE STR = MORE DAMAGE
+        strength = 1; // MORE STR = MORE DAMAGE
         dexterity = 1; // MORE DEX = MORE DEFENSE
         exp = 0;
         nextLevelExp = 5;
-        coin = 500;
+        coin = 0;
         currentWeapon = new OBJ_Sword_Normal(gp);
         currentShield = new OBJ_Shield_Wood(gp);
         currentLight = null;
@@ -683,10 +683,14 @@ public class Player extends Entity {
                 break;
             }
 
-        if (transparent == true) {
+        if(transparent == true) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
         }
-        g2.drawImage(image, tempScreenX, tempScreenY, null);
+        if(drawing == true) {
+            g2.drawImage(image, tempScreenX, tempScreenY, null);
+        }
+
+
 
         // RESET ALPHA
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));

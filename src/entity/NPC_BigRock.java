@@ -100,10 +100,11 @@ public class NPC_BigRock extends Entity {
         }
         // CREATE A ROCK LIST
         for (int i = 0; i < gp.npc[1].length; i++) {
-
-            if(gp.iTile[gp.currentMap][i] != null &&
+            if (gp.npc[gp.currentMap][i] != null &&
+                    gp.npc[gp.currentMap][i].name != null &&
                     gp.npc[gp.currentMap][i].name.equals(NPC_BigRock.npcName)) {
-                    rockList.add(gp.npc[gp.currentMap][i]);
+
+                rockList.add(gp.npc[gp.currentMap][i]);
             }
         }
 

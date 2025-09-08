@@ -5,6 +5,7 @@ import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.*;
 import objects.*;
+import tile_interactive.IT_Destructiblewall;
 import tile_interactive.IT_DryTree;
 import tile_interactive.IT_MetalPlate;
 
@@ -119,10 +120,18 @@ public class AssetSetter {
         gp.obj[mapNum][i].worldX = gp.tileSize * 27;
         gp.obj[mapNum][i].worldY = gp.tileSize * 15;
         i++;
-/*        gp.obj[mapNum][i] = new OBJ_Door_Iron(gp);
+        gp.obj[mapNum][i] = new OBJ_Door_Iron(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 18;
         gp.obj[mapNum][i].worldY = gp.tileSize * 23;
-        i++;*/
+        i++;
+
+        mapNum = 3;
+        i = 0;
+
+        gp.obj[mapNum][i] = new OBJ_Door_Iron(gp);
+        gp.obj[mapNum][i].worldX = gp.tileSize * 25;
+        gp.obj[mapNum][i].worldY = gp.tileSize * 15;
+        i++;
 
 
     }
@@ -197,12 +206,12 @@ public class AssetSetter {
         gp.monster[mapNum][i].worldY = gp.tileSize * 42;
         i++;
 
-/*        gp.monster[mapNum][i] = new MON_Orc(gp);
+        gp.monster[mapNum][i] = new MON_Orc(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 12;
         gp.monster[mapNum][i].worldY = gp.tileSize * 33;
-        i++;*/
+        i++;
 
-/*        gp.monster[mapNum][i] = new MON_GreenSlime(gp);
+        gp.monster[mapNum][i] = new MON_GreenSlime(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 36;
         gp.monster[mapNum][i].worldY = gp.tileSize * 25;
         i++;
@@ -251,7 +260,7 @@ public class AssetSetter {
         gp.monster[mapNum][i] = new MON_Redslime(gp);
         gp.monster[mapNum][i].worldX = gp.tileSize * 27;
         gp.monster[mapNum][i].worldY = gp.tileSize * 40;
-        i++;*/
+        i++;
 
 
         mapNum = 2;
@@ -309,7 +318,7 @@ public class AssetSetter {
         mapNum = 2;
         i = 0;
 
-/*
+
         gp.iTile[mapNum][i] = new IT_Destructiblewall(gp, 18, 30); i++;
         gp.iTile[mapNum][i] = new IT_Destructiblewall(gp, 17, 31); i++;
         gp.iTile[mapNum][i] = new IT_Destructiblewall(gp, 17, 32); i++;
@@ -327,7 +336,7 @@ public class AssetSetter {
         gp.iTile[mapNum][i] = new IT_Destructiblewall(gp, 22, 28); i++;
         gp.iTile[mapNum][i] = new IT_Destructiblewall(gp, 30, 28); i++;
         gp.iTile[mapNum][i] = new IT_Destructiblewall(gp, 32, 28); i++;
-*/
+
 
 
         gp.iTile[mapNum][i] = new IT_MetalPlate(gp, 20, 22); i++;
