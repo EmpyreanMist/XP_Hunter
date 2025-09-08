@@ -70,6 +70,12 @@ public class CollisionChecker {
 
         int index = 999;
 
+        // Use a temporal direction when it's being knockbacked
+        String direction = entity.direction;
+        if(entity.knockBack == true) {
+            direction = entity.knockBackDirection;
+        }
+
         for (int i = 0; i < gp.obj[1].length; i++) {
 
             if (gp.obj[gp.currentMap][i] != null) {
@@ -80,19 +86,12 @@ public class CollisionChecker {
                 gp.obj[gp.currentMap][i].solidArea.x = gp.obj[gp.currentMap][i].worldX + gp.obj[gp.currentMap][i].solidAreaDefaultX;
                 gp.obj[gp.currentMap][i].solidArea.y = gp.obj[gp.currentMap][i].worldY + gp.obj[gp.currentMap][i].solidAreaDefaultY;
 
-                switch (entity.direction) {
-                    case "up":
-                        entity.solidArea.y -= entity.speed;
-                        break;
-                    case "down":
-                        entity.solidArea.y += entity.speed;
-                        break;
-                    case "left":
-                        entity.solidArea.x -= entity.speed;
-                        break;
-                    case "right":
-                        entity.solidArea.x += entity.speed;
-                        break;
+
+                switch (direction) {
+                    case "up": entity.solidArea.y -= entity.speed; break;
+                    case "down": entity.solidArea.y += entity.speed; break;
+                    case "left": entity.solidArea.x -= entity.speed; break;
+                    case "right": entity.solidArea.x += entity.speed; break;
                 }
                 if (entity.solidArea.intersects(gp.obj[gp.currentMap][i].solidArea)) {
                     if (gp.obj[gp.currentMap][i].collision) entity.collisionOn = true;
@@ -163,18 +162,10 @@ public class CollisionChecker {
         gp.player.solidArea.y = gp.player.worldY + gp.player.solidAreaDefaultY;
 
         switch (entity.direction) {
-            case "up":
-                entity.solidArea.y -= entity.speed;
-                break;
-            case "down":
-                entity.solidArea.y += entity.speed;
-                break;
-            case "left":
-                entity.solidArea.x -= entity.speed;
-                break;
-            case "right":
-                entity.solidArea.x += entity.speed;
-                break;
+            case "up": entity.solidArea.y -= entity.speed; break;
+            case "down": entity.solidArea.y += entity.speed; break;
+            case "left": entity.solidArea.x -= entity.speed; break;
+            case "right": entity.solidArea.x += entity.speed; break;
         }
 
         if (entity.solidArea.intersects(gp.player.solidArea)) {
