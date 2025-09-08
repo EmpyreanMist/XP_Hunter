@@ -91,7 +91,7 @@ public class AssetSetter {
         i = 0;
 
         gp.obj[mapNum][i] = new OBJ_Chest(gp);
-        gp.obj[mapNum][i].setLoot(new OBJ_Pickaxe(gp));
+        gp.obj[mapNum][i].setLoot(new OBJ_Key(gp));
         gp.obj[mapNum][i].worldX = gp.tileSize * 10;
         gp.obj[mapNum][i].worldY = gp.tileSize * 10;
         i++;
