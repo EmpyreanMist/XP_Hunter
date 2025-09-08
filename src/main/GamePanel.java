@@ -194,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (delta >= 1) {
                 update();
                 drawToTempScreen(); // draw everything to the buffered image
-                drawToScreen(); // draw the buffered image to the screen
+                drawToScreen();
                 delta--;
                 drawCount++;
             }
