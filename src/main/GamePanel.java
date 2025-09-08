@@ -61,11 +61,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
-    public Entity obj[][] = new Entity[maxMap][15];
-    public Entity npc[][] = new Entity[maxMap][20];
-    public Entity monster[][] = new Entity[maxMap][20];
-    public InteractiveTile iTile[][] = new InteractiveTile[maxMap][50];
-    public Entity projectile[][] = new Entity[maxMap][20];
+    public Entity obj[][] = new Entity[maxMap][100];
+    public Entity npc[][] = new Entity[maxMap][100];
+    public Entity monster[][] = new Entity[maxMap][100];
+    public InteractiveTile iTile[][] = new InteractiveTile[maxMap][100];
+    public Entity projectile[][] = new Entity[maxMap][100];
 //  public ArrayList<Entity> projectileList = new ArrayList<>();
     public ArrayList<Entity> particleList = new ArrayList<>();
     ArrayList<Entity> entityList = new ArrayList<>();
@@ -386,12 +386,10 @@ public class GamePanel extends JPanel implements Runnable {
         se.play();
     }
     public void changeArea() {
-
         if(nextArea != currentArea) {
-
             stopMusic();
 
-            if(nextArea == outside) {
+            if (nextArea == outside) {
                 playMusic(0);
             }
             if(nextArea == indoor) {
@@ -400,10 +398,14 @@ public class GamePanel extends JPanel implements Runnable {
             if(nextArea == dungeon) {
                 playMusic(19);
             }
+
+            aSetter.setNPC();
         }
 
         currentArea = nextArea;
         aSetter.setMonster();
     }
+
+
 }
 
