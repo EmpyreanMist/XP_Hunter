@@ -1,0 +1,156 @@
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner {
+    border-top: 5px solid gold !important;
+    overflow-y: auto !important;
+}
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-accept-all,
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog #ez-accept-necessary,
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-save-settings {
+    background-color: gold !important;
+    padding: 12px 18px !important;
+    border-radius: .875rem !important;
+    transition: 0.3s background-color;
+    color: #000 !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+
+}
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-reject-all {
+    padding: 0 60px !important;
+}
+
+
+@media only screen and (min-width: 1250px) {
+
+    body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-accept-necessary,
+    body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-save-settings,
+    body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-reject-all {
+        margin-right: 0 !important;
+        margin-left: 20px !important;
+    }
+}
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-accept-all {
+    margin-left: auto !important;
+}
+
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner #ez-accept-all:hover,
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog #ez-accept-necessary:hover {
+    background-color: #ffeb81 !important;
+}
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner .ez-switch-view-btn {
+    padding: 12px 18px !important;
+    white-space: nowrap !important;
+}
+
+body #secondary-links {
+    justify-content: center !important;
+    padding-bottom: 4px;
+}
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog a {
+    color: goldenrod !important;
+}
+
+body #ez-cookie-dialog-wrapper {
+    background-color: rgba(0, 0, 0, .3) !important;
+    backdrop-filter: unset !important;
+}
+
+body #ezPrivacyCenter {
+    bottom: 5px !important;
+    background-color: goldenrod !important;
+    padding: 0;
+    right: 6px;
+    left: unset;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    writing-mode: unset;
+}
+
+#ez-cookie-dialog-wrapper #ez-cookie-dialog #secondary-links {
+    margin-top: 0 !important;
+}
+
+body #ez-cookie-dialog-wrapper #ez-cookie-dialog button {
+    margin-top: 0 !important;
+}
+
+@media only screen and (min-width: 601px) {
+    body #ez-cookie-dialog-wrapper #ez-cookie-dialog.ez_banner p {
+        margin: 20px 0 !important;
+    }
+}
+
+body .ezgpp-modal {
+    padding: 0 !important;
+}
+
+body .ezgpp-modal-content {
+    padding: 20px 40px !important;
+    color: #000 !important;
+    text-align: justify !important;
+    box-sizing: border-box !important;
+    ;
+}
+
+
+/* Ezoic CCPA privacy banner */
+
+[data-ezoic-role="privacy-policy"] {
+    padding: 4px 0 !important;
+    background: #1D1D1D !important;
+    border-top: none !important;
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    padding: 5px 50px !important;
+    box-sizing: border-box !important;
+}
+
+[data-ezoic-role="privacy-policy"] h2 {
+    font-size: 14px !important;
+}
+
+[data-ezoic-role="privacy-policy"] p {
+    font-size: 12px !important;
+}
+
+[data-ezoic-role="privacy-policy"] button#ez-ccpa-accept-all {
+    background-color: gold !important;
+    color: #000 !important;
+}
+
+[data-ezoic-role="privacy-policy"] button {
+    border: none !important;
+}
+
+@media (max-width: 1000px) {
+    [data-ezoic-role="privacy-policy"] {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+
+    [data-ezoic-role="privacy-policy"] h2 {
+        flex-basis: 100% !important;
+    }
+
+    [data-ezoic-role="privacy-policy"] p {
+        flex-basis: 100% !important;
+    }
+
+    [data-ezoic-role="privacy-policy"] button#ez-ccpa-accept-all {
+        flex-basis: 100px !important;
+    }
+
+    [data-ezoic-role="privacy-policy"] button#ez-ccpa-reject-all {
+        flex-basis: 200px !important;
+    }
+}

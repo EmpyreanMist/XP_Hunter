@@ -512,7 +512,6 @@ public class Player extends Entity {
     public void checkLevelUp() {
 
         if (exp >= nextLevelExp) {
-
             level++;
             nextLevelExp = nextLevelExp * 2;
             maxLife += 2;
@@ -520,6 +519,9 @@ public class Player extends Entity {
             dexterity++;
             attack = getAttack();
             defense = getDefense();
+            life = maxLife;
+            mana = maxMana;
+
 
             gp.playSE(8);
             gp.gameState = gp.dialogueState;
