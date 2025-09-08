@@ -28,10 +28,10 @@ public class AssetSetter {
         gp.obj[mapNum][i].worldY = gp.tileSize * 19;
         i++;
 
-        gp.obj[mapNum][i] = new OBJ_Axe(gp);
+/*        gp.obj[mapNum][i] = new OBJ_Axe(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 29;
         gp.obj[mapNum][i].worldY = gp.tileSize * 22;
-        i++;
+        i++;*/
 
         gp.obj[mapNum][i] = new OBJ_Tent(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 18;
@@ -81,10 +81,10 @@ public class AssetSetter {
         gp.obj[mapNum][i].worldY = gp.tileSize * 20;
         i++;
 
-        gp.obj[mapNum][i] = new OBJ_Potion_Red(gp);
+/*        gp.obj[mapNum][i] = new OBJ_Potion_Red(gp);
         gp.obj[mapNum][i].worldX = gp.tileSize * 17;
         gp.obj[mapNum][i].worldY = gp.tileSize * 21;
-        i++;
+        i++;*/
 
 
         mapNum = 1;

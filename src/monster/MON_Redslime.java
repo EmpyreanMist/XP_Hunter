@@ -3,10 +3,7 @@ package monster;
 
 import entity.Entity;
 import main.GamePanel;
-import objects.OBJ_Coin_Bronze;
-import objects.OBJ_Heart;
-import objects.OBJ_ManaCrystal;
-import objects.OBJ_Rock;
+import objects.*;
 
 import java.util.Random;
 
@@ -92,7 +89,7 @@ public class MON_Redslime extends Entity {
 
         // SET THE MONSTER DROP
         if(i < 50) {
-            dropItem(new OBJ_Coin_Bronze(gp));
+            dropItem(new OBJ_Axe(gp));
         }
         if(i >= 50 && i < 75) {
             dropItem(new OBJ_Heart(gp));
