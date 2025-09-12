@@ -125,6 +125,10 @@ public class AssetSetter {
         gp.obj[mapNum][i].worldX = gp.tileSize * 18;
         gp.obj[mapNum][i].worldY = gp.tileSize * 23;
         i++;
+        gp.obj[mapNum][i] = new OBJ_SavePillar(gp);
+        gp.obj[mapNum][i].worldX = gp.tileSize * 17;
+        gp.obj[mapNum][i].worldY = gp.tileSize * 37;
+        i++;
 
         mapNum = 3;
         i = 0;

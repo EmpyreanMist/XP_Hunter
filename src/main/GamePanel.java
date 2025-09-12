@@ -55,7 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
     public PathFinder pFinder = new PathFinder(this);
     EnvironmentManager eManager = new EnvironmentManager(this);
     Map map = new Map(this);
-    SaveLoad saveLoad = new SaveLoad(this);
+    public SaveLoad saveLoad = new SaveLoad(this);
     public EntityGenerator eGenerator = new EntityGenerator(this);
     public CutsceneManager csManager = new CutsceneManager(this);
     Thread gameThread;
@@ -365,7 +365,8 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Col" + (player.worldX + player.solidArea.x) / tileSize, x, y); y += lineHeight;
             g2.drawString("Row" + (player.worldY + player.solidArea.y) / tileSize, x, y); y += lineHeight;
             g2.drawString("Draw time: " + passed, x, y); y += lineHeight;
-            g2.drawString("God Mode: " + keyH.godModeOn, x, y);
+            g2.drawString("God Mode: " + keyH.godModeOn, x, y); y += lineHeight;
+            g2.drawString("Current Map:  " + currentMap, x, y);
         }
     }
 

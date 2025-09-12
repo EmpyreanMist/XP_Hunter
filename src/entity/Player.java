@@ -289,17 +289,49 @@ public class Player extends Entity {
             gp.eHandler.checkEvent();
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
-            if (collisionOn == false && keyH.enterPressed == false) {
-                if (dx != 0 && dy != 0) {
+            if (!keyH.enterPressed) {
+                double moveSpeed = speed;
 
-                    double diagonalSpeed = speed / Math.sqrt(2);
-                    worldX += dx * diagonalSpeed;
-                    worldY += dy * diagonalSpeed;
-                } else {
-                    worldX += dx * speed;
-                    worldY += dy * speed;
+                // Normalisera vid diagonal
+                if (dx != 0 && dy != 0) {
+                    moveSpeed = speed / Math.sqrt(2);
+                }
+
+                // Testa X-rörelse separat
+                if (dx != 0) {
+                    int oldX = worldX;
+                    worldX += dx * moveSpeed;
+
+                    collisionOn = false;
+                    gp.cChecker.checkTile(this);
+                    gp.cChecker.checkObject(this, true);
+                    gp.cChecker.checkEntity(this, gp.npc);
+                    gp.cChecker.checkEntity(this, gp.monster);
+                    gp.cChecker.checkEntity(this, gp.iTile);
+
+                    if (collisionOn) {
+                        worldX = oldX; // återställ om krock
+                    }
+                }
+
+                // Testa Y-rörelse separat
+                if (dy != 0) {
+                    int oldY = worldY;
+                    worldY += dy * moveSpeed;
+
+                    collisionOn = false;
+                    gp.cChecker.checkTile(this);
+                    gp.cChecker.checkObject(this, true);
+                    gp.cChecker.checkEntity(this, gp.npc);
+                    gp.cChecker.checkEntity(this, gp.monster);
+                    gp.cChecker.checkEntity(this, gp.iTile);
+
+                    if (collisionOn) {
+                        worldY = oldY; // återställ om krock
+                    }
                 }
             }
+
 
             spriteCounter++;
             if (spriteCounter > 12) {
@@ -458,6 +490,11 @@ public class Player extends Entity {
     public void damageMonster(int i, Entity attacker, int attack, int knockBackPower) {
 
         if (i != 999) {
+
+            if (gp.keyH.godModeOn) {
+                attack *= 10; // gör 10x mer skada
+            }
+
             if (gp.monster[gp.currentMap][i].invincible == false) {
 
                 gp.playSE(5);
