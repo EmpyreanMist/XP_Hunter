@@ -228,7 +228,7 @@ public class Player extends Entity {
             } else if (collisionOn == false) {
                 switch (knockBackDirection) {
                     case "up": worldY -= speed; break;
-                    case "down": worldY += speed;break;
+                    case "down": worldY += speed; break;
                     case "left": worldX -= speed; break;
                     case "right": worldX += speed; break;
                 }
@@ -252,10 +252,19 @@ public class Player extends Entity {
         else if (keyH.upPressed == true || keyH.downPressed == true ||
                 keyH.leftPressed == true || keyH.rightPressed == true) {
 
-            if (keyH.upPressed == true) { direction = "up"; }
-            else if (keyH.downPressed == true) { direction = "down"; }
-            else if (keyH.leftPressed == true) { direction = "left"; }
-            else if (keyH.rightPressed == true) { direction = "right"; }
+            int dx = 0;
+            int dy = 0;
+
+            if (keyH.upPressed) { dy -= 1; }
+            if (keyH.downPressed) { dy += 1; }
+            if (keyH.leftPressed) { dx -= 1; }
+            if (keyH.rightPressed) { dx += 1; }
+
+            // Sätt direction för animation (behåller samma som innan, kan byggas ut med egna diagonal-sprites senare)
+            if (dy == -1) direction = "up";
+            if (dy == 1) direction = "down";
+            if (dx == -1) direction = "left";
+            if (dx == 1) direction = "right";
 
             // CHECK TILE COLLISION
             collisionOn = false;
@@ -281,12 +290,14 @@ public class Player extends Entity {
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (collisionOn == false && keyH.enterPressed == false) {
+                if (dx != 0 && dy != 0) {
 
-                switch (direction) {
-                    case "up": worldY -= speed; break;
-                    case "down": worldY += speed; break;
-                    case "left": worldX -= speed; break;
-                    case "right": worldX += speed; break;
+                    double diagonalSpeed = speed / Math.sqrt(2);
+                    worldX += dx * diagonalSpeed;
+                    worldY += dy * diagonalSpeed;
+                } else {
+                    worldX += dx * speed;
+                    worldY += dy * speed;
                 }
             }
 
@@ -318,7 +329,6 @@ public class Player extends Entity {
             gp.playSE(7);
             attacking = true;
             spriteCounter = 0;
-
         }
 
         gp.keyH.enterPressed = false;
@@ -377,6 +387,7 @@ public class Player extends Entity {
             }
         }
     }
+
 
 
     public void pickUpObject(int i) {
