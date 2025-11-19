@@ -31,3 +31,5 @@
     - Knockback, guarding, and invincibility frames.
 
 ---
+
+This project is made to further develop the 2d game made by RyiSnow
