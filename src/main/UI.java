@@ -91,6 +91,7 @@ public class UI {
         if (gp.gameState == gp.playState) {
             drawPlayerLife();
             drawDashCooldown();
+            drawXpBar();
             drawMonsterLife();
             drawMessage();
         }
@@ -99,6 +100,7 @@ public class UI {
         if (gp.gameState == gp.pauseState) {
             drawPlayerLife();
             drawDashCooldown();
+            drawXpBar();
             drawPauseScreen();
         }
 
@@ -241,6 +243,39 @@ public class UI {
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(2));
         g2.drawRoundRect(x, y, barWidth, barHeight, 8, 8);
+    }
+
+    public void drawXpBar() {
+
+        int barWidth = gp.screenWidth - gp.tileSize;
+        int barHeight = 18;
+        int x = gp.tileSize / 2;
+        int y = gp.screenHeight - gp.tileSize / 2 - barHeight;
+
+        double xpRatio = 0;
+        if (gp.player.nextLevelExp > 0) {
+            xpRatio = (double) gp.player.exp / gp.player.nextLevelExp;
+        }
+        if (xpRatio < 0) xpRatio = 0;
+        if (xpRatio > 1) xpRatio = 1;
+        int fillWidth = (int) (barWidth * xpRatio);
+
+        g2.setColor(new Color(20, 20, 20, 220));
+        g2.fillRoundRect(x, y, barWidth, barHeight, 10, 10);
+
+        g2.setColor(new Color(80, 180, 255));
+        g2.fillRoundRect(x, y, fillWidth, barHeight, 10, 10);
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(x, y, barWidth, barHeight, 10, 10);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+        String leftText = "Lv " + gp.player.level;
+        String rightText = gp.player.exp + "/" + gp.player.nextLevelExp + " XP";
+        g2.drawString(leftText, x + 10, y - 6);
+        int rightTextX = getXforAlignToRightText(rightText, x + barWidth);
+        g2.drawString(rightText, rightTextX, y - 6);
     }
 
     public void drawMonsterLife() {
