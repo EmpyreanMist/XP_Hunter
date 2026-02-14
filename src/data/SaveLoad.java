@@ -88,6 +88,7 @@ public class SaveLoad {
 
             gp.player.level = ds.level;
             gp.player.maxLife = ds.maxLife;
+            gp.player.life = ds.life;
             gp.player.maxMana = ds.maxMana;
             gp.player.mana = ds.mana;
             gp.player.strength = ds.strength;
@@ -120,11 +121,19 @@ public class SaveLoad {
                     }
                     else {
                         gp.obj[mapNum][i] = gp.eGenerator.getObject(ds.mapObjectNames[mapNum][i]);
+
+                        if (gp.obj[mapNum][i] == null) {
+                            System.out.println("Unknown object in save: " + ds.mapObjectNames[mapNum][i] + " at map " + mapNum + ", index " + i);
+                            continue;
+                        }
+
                         gp.obj[mapNum][i].worldX = ds.mapObjectWorldX[mapNum][i];
                         gp.obj[mapNum][i].worldY = ds.mapObjectWorldY[mapNum][i];
+
                         if(ds.mapObjectLootNames[mapNum][i] != null) {
-                           gp.obj[mapNum][i].setLoot(gp.eGenerator.getObject(ds.mapObjectLootNames[mapNum][i]));
+                            gp.obj[mapNum][i].setLoot(gp.eGenerator.getObject(ds.mapObjectLootNames[mapNum][i]));
                         }
+
                         gp.obj[mapNum][i].opened = ds.mapObjectOpened[mapNum][i];
                         if(gp.obj[mapNum][i].opened == true) {
                             gp.obj[mapNum][i].down1 = gp.obj[mapNum][i].image2;
