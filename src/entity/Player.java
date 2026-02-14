@@ -1,11 +1,10 @@
 package entity;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import main.GamePanel;
 import main.KeyHandler;
 import objects.*;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Player extends Entity {
 
@@ -47,14 +46,14 @@ public class Player extends Entity {
         direction = "down";
 
         // PLAYER STATUS
-        level = 1;
-        maxLife = 6;
+        level = 5;
+        maxLife = 10;
         life = maxLife;
         maxMana = 4;
         mana = maxMana;
         ammo = 10;
-        strength = 1; // MORE STR = MORE DAMAGE
-        dexterity = 1; // MORE DEX = MORE DEFENSE
+        strength = 10; // MORE STR = MORE DAMAGE
+        dexterity = 10; // MORE DEX = MORE DEFENSE
         exp = 0;
         nextLevelExp = 5;
         coin = 0;
@@ -106,8 +105,8 @@ public class Player extends Entity {
         inventory.clear();
         inventory.add(currentWeapon);
         inventory.add(currentShield);
-/*        inventory.add(new OBJ_Key(gp));
-        inventory.add(new OBJ_Key(gp));*/
+        inventory.add(new OBJ_Key(gp));
+        inventory.add(new OBJ_Key(gp));
 
     }
 
@@ -168,14 +167,14 @@ public class Player extends Entity {
     public void getAttackImage() {
 
         if(currentWeapon.type == type_sword) {
-        attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
-        attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
-        attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
-        attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
-        attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
-        attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
-        attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
-        attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
+            attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
+            attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+            attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
+            attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
+            attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
+            attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
+            attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
+            attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
         }
         if(currentWeapon.type == type_axe) {
             attackUp1 = setup("/player/boy_axe_up_1", gp.tileSize, gp.tileSize * 2);
@@ -273,10 +272,40 @@ public class Player extends Entity {
             // CHECK OBJECT COLLISION
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
+            if (keyH.enterPressed && objIndex == 999) {
+                int nearbyObstacleIndex = findNearbyObstacleIndex(gp.tileSize + gp.tileSize / 2);
+                pickUpObject(nearbyObstacleIndex);
+            }
 
-            // CHECK NPC COLLISION
-            int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
-            interactNPC(npcIndex);
+            // CHECK NPC COLLISION (use actual input direction for pushing)
+            int npcIndex = 999;
+            String pushDirection = null;
+
+            if (dx != 0) {
+                String dirX = (dx < 0) ? "left" : "right";
+                npcIndex = checkNpcCollision(dirX);
+                if (npcIndex != 999) {
+                    pushDirection = dirX;
+                } else {
+                    npcIndex = findPushableNpcIndex(dx, 0);
+                    if (npcIndex != 999) {
+                        pushDirection = dirX;
+                    }
+                }
+            }
+            if (npcIndex == 999 && dy != 0) {
+                String dirY = (dy < 0) ? "up" : "down";
+                npcIndex = checkNpcCollision(dirY);
+                if (npcIndex != 999) {
+                    pushDirection = dirY;
+                } else {
+                    npcIndex = findPushableNpcIndex(0, dy);
+                    if (npcIndex != 999) {
+                        pushDirection = dirY;
+                    }
+                }
+            }
+            interactNPC(npcIndex, pushDirection);
 
             // CHECK MONSTER COLLISION
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
@@ -302,12 +331,16 @@ public class Player extends Entity {
                     int oldX = worldX;
                     worldX += dx * moveSpeed;
 
+                    String prevDirection = direction;
+                    direction = (dx < 0) ? "left" : "right";
+
                     collisionOn = false;
                     gp.cChecker.checkTile(this);
                     gp.cChecker.checkObject(this, true);
                     gp.cChecker.checkEntity(this, gp.npc);
                     gp.cChecker.checkEntity(this, gp.monster);
                     gp.cChecker.checkEntity(this, gp.iTile);
+                    direction = prevDirection;
 
                     if (collisionOn) {
                         worldX = oldX; // återställ om krock
@@ -319,12 +352,16 @@ public class Player extends Entity {
                     int oldY = worldY;
                     worldY += dy * moveSpeed;
 
+                    String prevDirection = direction;
+                    direction = (dy < 0) ? "up" : "down";
+
                     collisionOn = false;
                     gp.cChecker.checkTile(this);
                     gp.cChecker.checkObject(this, true);
                     gp.cChecker.checkEntity(this, gp.npc);
                     gp.cChecker.checkEntity(this, gp.monster);
                     gp.cChecker.checkEntity(this, gp.iTile);
+                    direction = prevDirection;
 
                     if (collisionOn) {
                         worldY = oldY; // återställ om krock
@@ -354,7 +391,11 @@ public class Player extends Entity {
             guardCounter = 0;
 
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
-            interactNPC(npcIndex);
+            interactNPC(npcIndex, direction);
+            if (keyH.enterPressed) {
+                int nearbyObstacleIndex = findNearbyObstacleIndex(gp.tileSize + gp.tileSize / 2);
+                pickUpObject(nearbyObstacleIndex);
+            }
         }
 
         if (keyH.enterPressed == true && attackCanceled == false && attacking == false) {
@@ -444,19 +485,135 @@ public class Player extends Entity {
             else {
                 String text;
 
-            if(canObtainItem(gp.obj[gp.currentMap][i]) == true) {
-                gp.playSE(1);
-                text = "Got a " + gp.obj[gp.currentMap][i].name + "!";
-            }   else {
-                text = "You cannot carry any more";
-            }
-            gp.ui.addMessage(text);
-            gp.obj[gp.currentMap][i] = null;
+                if(canObtainItem(gp.obj[gp.currentMap][i]) == true) {
+                    gp.playSE(1);
+                    text = "Got a " + gp.obj[gp.currentMap][i].name + "!";
+                }   else {
+                    text = "You cannot carry any more";
+                }
+                gp.ui.addMessage(text);
+                gp.obj[gp.currentMap][i] = null;
             }
         }
     }
 
-    public void interactNPC(int i)
+    private int findNearbyObstacleIndex(int rangePixels) {
+
+        int playerCenterX = worldX + solidAreaDefaultX + solidArea.width / 2;
+        int playerCenterY = worldY + solidAreaDefaultY + solidArea.height / 2;
+        int nearestIndex = 999;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < gp.obj[gp.currentMap].length; i++) {
+            Entity object = gp.obj[gp.currentMap][i];
+
+            if (object == null || object.type != type_obstacle) {
+                continue;
+            }
+
+            int objectCenterX = object.worldX + object.solidAreaDefaultX + object.solidArea.width / 2;
+            int objectCenterY = object.worldY + object.solidAreaDefaultY + object.solidArea.height / 2;
+            double distance = Math.hypot(playerCenterX - objectCenterX, playerCenterY - objectCenterY);
+
+            if (distance <= rangePixels && distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestIndex = i;
+            }
+        }
+
+        return nearestIndex;
+    }
+
+    private int checkNpcCollision(String checkDirection) {
+
+        String prevDirection = direction;
+        boolean prevCollision = collisionOn;
+
+        direction = checkDirection;
+        collisionOn = false;
+        int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+
+        direction = prevDirection;
+        collisionOn = prevCollision;
+
+        return npcIndex;
+    }
+
+    private int findPushableNpcIndex(int dx, int dy) {
+
+        Rectangle probeArea = new Rectangle(
+                worldX + solidAreaDefaultX,
+                worldY + solidAreaDefaultY,
+                solidArea.width,
+                solidArea.height
+        );
+
+        int reach = speed + 8;
+        int sidePadding = 10;
+
+        if (dx < 0) {
+            probeArea.x -= reach;
+            probeArea.width += reach;
+            probeArea.y -= sidePadding;
+            probeArea.height += sidePadding * 2;
+        } else if (dx > 0) {
+            probeArea.width += reach;
+            probeArea.y -= sidePadding;
+            probeArea.height += sidePadding * 2;
+        } else if (dy < 0) {
+            probeArea.y -= reach;
+            probeArea.height += reach;
+            probeArea.x -= sidePadding;
+            probeArea.width += sidePadding * 2;
+        } else if (dy > 0) {
+            probeArea.height += reach;
+            probeArea.x -= sidePadding;
+            probeArea.width += sidePadding * 2;
+        } else {
+            return 999;
+        }
+
+        int playerCenterX = worldX + solidAreaDefaultX + solidArea.width / 2;
+        int playerCenterY = worldY + solidAreaDefaultY + solidArea.height / 2;
+        int nearestNpcIndex = 999;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < gp.npc[gp.currentMap].length; i++) {
+            Entity npc = gp.npc[gp.currentMap][i];
+            if (npc == null) {
+                continue;
+            }
+
+            Rectangle npcArea = new Rectangle(
+                    npc.worldX + npc.solidAreaDefaultX,
+                    npc.worldY + npc.solidAreaDefaultY,
+                    npc.solidArea.width,
+                    npc.solidArea.height
+            );
+
+            if (!probeArea.intersects(npcArea)) {
+                continue;
+            }
+
+            int npcCenterX = npc.worldX + npc.solidAreaDefaultX + npc.solidArea.width / 2;
+            int npcCenterY = npc.worldY + npc.solidAreaDefaultY + npc.solidArea.height / 2;
+
+            if (dx < 0 && npcCenterX >= playerCenterX) continue;
+            if (dx > 0 && npcCenterX <= playerCenterX) continue;
+            if (dy < 0 && npcCenterY >= playerCenterY) continue;
+            if (dy > 0 && npcCenterY <= playerCenterY) continue;
+
+            double distance = Math.hypot(playerCenterX - npcCenterX, playerCenterY - npcCenterY);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestNpcIndex = i;
+            }
+        }
+
+        return nearestNpcIndex;
+    }
+
+    public void interactNPC(int i, String pushDirection)
     {
         if(i != 999)
         {
@@ -466,7 +623,9 @@ public class Player extends Entity {
                 gp.npc[gp.currentMap][i].speak();
             }
 
-            gp.npc[gp.currentMap][i].move(direction);
+            if (pushDirection != null) {
+                gp.npc[gp.currentMap][i].move(pushDirection);
+            }
         }
     }
 
@@ -542,7 +701,7 @@ public class Player extends Entity {
 
             if(gp.iTile[gp.currentMap][i].life == 0) {
                 gp.iTile[gp.currentMap][i].checkDrop();
-            gp.iTile[gp.currentMap][i] = gp.iTile[gp.currentMap][i].getDestroyedForm();
+                gp.iTile[gp.currentMap][i] = gp.iTile[gp.currentMap][i].getDestroyedForm();
             }
         }
     }
@@ -618,7 +777,7 @@ public class Player extends Entity {
                         selectedItem.amount--;
                     }
                     else {
-                    inventory.remove(itemIndex);
+                        inventory.remove(itemIndex);
                     }
                 }
             }
@@ -731,7 +890,7 @@ public class Player extends Entity {
                     image = guardRight;
                 }
                 break;
-            }
+        }
 
         if(transparent == true) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));

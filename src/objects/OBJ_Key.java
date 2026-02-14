@@ -32,7 +32,7 @@ public class OBJ_Key extends Entity {
     }
     public boolean use(Entity e) {
 
-        int objIndex = getDetected(e, gp.obj, "Door");
+        int objIndex = getNearbyDoorIndex(e, gp.tileSize + gp.tileSize / 2);
 
         if(objIndex != 999) {
             startDialogue(this, 0);
@@ -45,5 +45,31 @@ public class OBJ_Key extends Entity {
             return false;
         }
 
+    }
+
+    private int getNearbyDoorIndex(Entity user, int rangePixels) {
+
+        int userCenterX = user.worldX + user.solidAreaDefaultX + user.solidArea.width / 2;
+        int userCenterY = user.worldY + user.solidAreaDefaultY + user.solidArea.height / 2;
+        int nearestIndex = 999;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < gp.obj[gp.currentMap].length; i++) {
+            Entity object = gp.obj[gp.currentMap][i];
+            if (object == null || !OBJ_Door.objName.equals(object.name)) {
+                continue;
+            }
+
+            int objectCenterX = object.worldX + object.solidAreaDefaultX + object.solidArea.width / 2;
+            int objectCenterY = object.worldY + object.solidAreaDefaultY + object.solidArea.height / 2;
+            double distance = Math.hypot(userCenterX - objectCenterX, userCenterY - objectCenterY);
+
+            if (distance <= rangePixels && distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestIndex = i;
+            }
+        }
+
+        return nearestIndex;
     }
 }

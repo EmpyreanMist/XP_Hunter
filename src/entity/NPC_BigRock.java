@@ -72,7 +72,12 @@ public class NPC_BigRock extends Entity {
     public void move(String d) {
         this.direction = d;
 
-        checkCollision();
+        collisionOn = false;
+        gp.cChecker.checkTile(this);
+        gp.cChecker.checkObject(this, false);
+        gp.cChecker.checkEntity(this, gp.npc);
+        gp.cChecker.checkEntity(this, gp.monster);
+        gp.cChecker.checkEntity(this, gp.iTile);
 
         if (collisionOn == false) {
             switch (direction) {
