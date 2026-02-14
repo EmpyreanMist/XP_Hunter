@@ -5,6 +5,7 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 ## Current Functionality
 
 ### Core Gameplay
+
 - Real-time top-down movement (WASD), including diagonal movement.
 - Directional melee combat with weapon-dependent attack animations.
 - Guarding system (`SPACE`) with parry/guard behavior.
@@ -13,12 +14,16 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - Contact damage, knockback, invincibility frames, and transparency feedback when hit.
 
 ### Player Progression
+
 - Player stats: `level`, `life`, `mana`, `strength`, `dexterity`, `attack`, `defense`, `exp`, `coin`.
 - XP gain from defeated enemies.
 - Level-up system with scaling required XP (`nextLevelExp`) and stat growth.
 - Equipment system for weapon and shield.
+- Skill tree system with 3 branches (`Defense`, `Mage`, `Speed`), skill points on level-up, passive bonuses, breakpoints, and capstones.
+- Active skills unlocked from trees (`1` Guard Stance, `2` Arcane Surge/Overload, `3` Phantom State).
 
 ### Items and Inventory
+
 - Inventory with stackable and non-stackable items.
 - Item categories: weapon, shield, consumable, light source, pickup-only, obstacle, etc.
 - Usable consumables and keys.
@@ -27,12 +32,14 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - Pickups and drops (coins, hearts, mana crystals, potions, tools, etc.).
 
 ### NPCs and Interaction
+
 - Dialogue system with typewriter-style text reveal.
 - NPC interaction on `ENTER`.
 - Merchant NPC with buy/sell trade UI and inventory.
 - Pushable Big Rock puzzle NPC behavior.
 
 ### World and Exploration
+
 - Multi-map world structure (`maxMap = 10`, multiple populated maps).
 - Tile collision, object collision, entity collision.
 - Event trigger system (teleports, hazards, boss trigger zones).
@@ -43,16 +50,19 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
   - Metal plates
 
 ### Boss and Cutscene Flow
+
 - Skeleton Lord boss encounter with cutscene sequencing.
 - Temporary arena door lock-in during boss intro.
 - Boss phases/rage behavior and custom boss HP bar.
 - Boss defeat progression flag (`Progress.skeletonLordDefeated`) and cleanup logic.
 
 ### UI / HUD
+
 - Hearts-based life HUD.
 - Mana crystal HUD.
 - Dash cooldown HUD bar.
 - XP bar at bottom with current level and XP/next level.
+- Talent tree popup HUD (shown only when opened with `N`).
 - Floating message log.
 - Monster HP bars (normal + boss format).
 - Character screen with full stats and equipped gear.
@@ -60,15 +70,16 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - Minimap and full map screen.
 
 ### Game States and Menus
+
 - Title screen (`New Game`, `Load Game`, `Quit`).
 - Play, Pause, Dialogue, Character, Options, Trade, Transition, Sleep, Map, Cutscene, and Game Over states.
 - Options menu:
-  - Fullscreen toggle
   - Music/SFX volume
   - Controls page
   - End game confirmation
 
 ### Save / Load
+
 - Binary serialization save system (`save.dat`) for:
   - Player stats
   - Inventory and item amounts
@@ -77,6 +88,7 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - Defensive handling for unknown/unsupported saved objects during load.
 
 ### Audio and Visual Systems
+
 - Background music with area/boss transitions.
 - Sound effects for combat, interaction, UI, events.
 - Lighting/environment manager with sleep transition fade.
@@ -84,12 +96,14 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - Render sorting by world Y for depth illusion.
 
 ### Debug / Developer Tools
+
 - Toggle debug overlay (`T`) with world position and diagnostics.
 - God mode toggle (`G`).
 
 ## Controls
 
 ### In-game
+
 - `W A S D`: Move
 - `ENTER`: Confirm / attack / interact
 - `F`: Shoot / cast projectile
@@ -99,13 +113,19 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - `P`: Pause
 - `M`: Full map
 - `TAB`: Toggle minimap
+- `N`: Open/close Talent Tree popup
 - `ESC`: Options
+- `1`: Guard Stance (Defense tree unlock)
+- `2`: Arcane Surge / Arcane Overload (Mage tree unlock)
+- `3`: Phantom State (Speed tree capstone unlock)
 
 ### Debug
+
 - `T`: Toggle debug text
 - `G`: Toggle god mode
 
 ## Project Structure (high-level)
+
 - `src/main`: game loop, input, rendering orchestration, UI, events, collision, setup
 - `src/entity`: player, NPCs, shared entity logic, particles
 - `src/monster`: enemy and boss implementations
@@ -114,4 +134,5 @@ XP Hunter is a 2D action RPG built in Java (Swing/AWT) with tile-based maps, com
 - `src/data`: save/load and progression data
 
 ## Notes
+
 - This project is a continued/customized development inspired by RyiSnow's Java RPG tutorial series.

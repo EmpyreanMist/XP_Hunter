@@ -1,6 +1,7 @@
 package objects;
 
 import entity.Entity;
+import entity.Player;
 import entity.Projectile;
 import main.GamePanel;
 
@@ -41,14 +42,18 @@ public class OBJ_Fireball extends Projectile {
 
     public boolean haveResource(Entity user) {
 
-        boolean haveResource = false;
-        if(user.mana >= useCost) {
-            haveResource = true;
+        int cost = useCost;
+        if (user instanceof Player) {
+            cost = ((Player) user).getEffectiveSpellCost(useCost);
         }
-        return haveResource;
+        return user.mana >= cost;
     }
     public void subtractResource(Entity user) {
-        user.mana -= useCost;
+        int cost = useCost;
+        if (user instanceof Player) {
+            cost = ((Player) user).getEffectiveSpellCost(useCost);
+        }
+        user.mana -= cost;
     }
     public Color getParticleColor() {
         Color color = new Color(240,50,0);

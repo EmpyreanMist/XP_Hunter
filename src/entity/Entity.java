@@ -63,8 +63,8 @@ public class Entity {
     // CHARACTER ATTRIBUTES
     public String name;
     public int defaultSpeed;
-    public int maxLife;
-    public int life;
+    public double maxLife;
+    public double life;
     public int maxMana;
     public int mana;
     public int ammo;
@@ -72,8 +72,8 @@ public class Entity {
     public int level;
     public int strength;
     public int dexterity;
-    public int attack;
-    public int defense;
+    public double attack;
+    public double defense;
     public int exp;
     public int nextLevelExp;
     public int coin;
@@ -568,11 +568,11 @@ public class Entity {
         }
     }
 
-    public void damagePlayer(int attack) {
+    public void damagePlayer(double attack) {
 
         if (gp.player.invincible == false) {
 
-            int damage = attack - gp.player.defense;
+            double damage = attack - gp.player.defense;
 
             // Get an opposite direction of this attacker
             String canGuardDirection = getOppositeDirection(direction);
@@ -580,31 +580,36 @@ public class Entity {
             if(gp.player.guarding == true && gp.player.direction.equals(canGuardDirection)) {
 
                 // Parry
-                if(gp.player.guardCounter < 10) {
+                if(gp.player.guardCounter < gp.player.getParryWindowFrames()) {
                     damage = 0;
                     gp.playSE(16);
                     setKnockBack(this, gp.player, knockBackPower);
                     offBalance = true;
                     spriteCounter =- 60;
+                    gp.player.onPerfectParry(this, attack);
                 }
 
                 // Normal guard
                 else {
                     damage /= 3;
+                    damage = gp.player.applyMitigation(damage, true);
                     gp.playSE(15);
                 }
             }
             else {
                 // Not guarding
                 gp.playSE(6);
+                damage = gp.player.applyMitigation(damage, false);
             if (damage < 1) {
                 damage = 1;
             }
         }
 
+            damage = gp.player.adjustFatalDamage(damage);
             if(damage != 0) {
                 gp.player.transparent = true;
                 setKnockBack(gp.player, this, knockBackPower);
+                gp.player.onTakeDamage(this, damage);
             }
 
             gp.player.life -= damage;
@@ -616,7 +621,11 @@ public class Entity {
 
         this.attacker = attacker;
         target.knockBackDirection = attacker.direction;
-        target.speed += knockBackPower;
+        if (target == gp.player) {
+            target.speed += gp.player.getKnockBackPowerAfterResist(knockBackPower);
+        } else {
+            target.speed += knockBackPower;
+        }
         target.knockBack = true;
     }
 

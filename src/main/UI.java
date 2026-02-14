@@ -7,6 +7,7 @@ import objects.OBJ_ManaCrystal;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,8 @@ public class UI {
     public int playerSlotRow = 0;
     public int npcSlotCol = 0;
     public int npcSlotRow = 0;
+    public int skillTreeSelection = 0;
+    public int skillNodeSelection = 0;
     public int subState = 0;
     int counter = 0;
     public Entity npc;
@@ -133,6 +136,9 @@ public class UI {
         if(gp.gameState == gp.sleepState) {
             drawSleepScreen();
         }
+        if(gp.gameState == gp.talentTreeState) {
+            drawTalentTreePopup();
+        }
 
     }
 
@@ -143,12 +149,14 @@ public class UI {
         int x = gp.tileSize/2;
         int y = gp.tileSize/2;
         int i = 0;
+        int playerMaxLifeUnits = (int) Math.round(gp.player.maxLife);
+        int playerLifeUnits = (int) Math.round(gp.player.life);
         int iconSize = 32;
         int manaStartX = (gp.tileSize/2) - 5;
         int manaStartY = 0;
 
         //DRAW MAX LIFE (BLANK)
-        while(i < gp.player.maxLife/2)
+        while(i < playerMaxLifeUnits/2)
         {
             g2.drawImage(heart_blank, x, y, iconSize, iconSize, null);
             i++;
@@ -166,11 +174,11 @@ public class UI {
         y = gp.tileSize/2;
         i = 0;
         //DRAW CURRENT HEART // ITS LIKE COLORING THE BLANK HEARTS
-        while(i < gp.player.life)
+        while(i < playerLifeUnits)
         {
             g2.drawImage(heart_half,x,y,iconSize, iconSize, null);
             i++;
-            if(i < gp.player.life)
+            if(i < playerLifeUnits)
             {
                 g2.drawImage(heart_full,x,y,iconSize, iconSize, null);
             }
@@ -243,39 +251,94 @@ public class UI {
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(2));
         g2.drawRoundRect(x, y, barWidth, barHeight, 8, 8);
+        if (gp.player.getMaxDashCharges() > 1) {
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 14F));
+            g2.drawString("Charges: " + gp.player.getDashCharges() + "/" + gp.player.getMaxDashCharges(), x + barWidth + 10, y + 12);
+        }
     }
 
     public void drawXpBar() {
 
         int barWidth = gp.screenWidth - gp.tileSize;
-        int barHeight = 18;
+        int barHeight = 24;
         int x = gp.tileSize / 2;
-        int y = gp.screenHeight - gp.tileSize / 2 - barHeight;
+        int y = gp.screenHeight - gp.tileSize / 2 - barHeight - 2;
+        int arc = 14;
 
         double xpRatio = 0;
         if (gp.player.nextLevelExp > 0) {
             xpRatio = (double) gp.player.exp / gp.player.nextLevelExp;
         }
-        if (xpRatio < 0) xpRatio = 0;
-        if (xpRatio > 1) xpRatio = 1;
-        int fillWidth = (int) (barWidth * xpRatio);
+        xpRatio = clamp01(xpRatio);
+        int fillWidth = (int) Math.round(barWidth * xpRatio);
+        int xpLeft = Math.max(0, gp.player.nextLevelExp - gp.player.exp);
 
-        g2.setColor(new Color(20, 20, 20, 220));
-        g2.fillRoundRect(x, y, barWidth, barHeight, 10, 10);
+        g2.setColor(new Color(0, 0, 0, 120));
+        g2.fillRoundRect(x + 2, y + 3, barWidth, barHeight, arc, arc);
 
-        g2.setColor(new Color(80, 180, 255));
-        g2.fillRoundRect(x, y, fillWidth, barHeight, 10, 10);
+        GradientPaint bgGradient = new GradientPaint(
+                x, y, new Color(10, 28, 56, 230),
+                x, y + barHeight, new Color(4, 12, 24, 240)
+        );
+        g2.setPaint(bgGradient);
+        g2.fillRoundRect(x, y, barWidth, barHeight, arc, arc);
 
-        g2.setColor(Color.white);
+        if (fillWidth > 0) {
+            Shape oldClip = g2.getClip();
+            RoundRectangle2D fillShape = new RoundRectangle2D.Float(x, y, fillWidth, barHeight, arc, arc);
+            g2.setClip(fillShape);
+
+            GradientPaint fillGradient = new GradientPaint(
+                    x, y, new Color(48, 238, 255),
+                    x, y + barHeight, new Color(20, 148, 255)
+            );
+            g2.setPaint(fillGradient);
+            g2.fillRect(x, y, fillWidth, barHeight);
+
+            float pulse = (float) (0.45 + 0.55 * Math.sin(System.nanoTime() / 300000000.0));
+            int glowWidth = Math.max(22, (int) (barWidth * 0.14));
+            int glowX = x + (int) ((barWidth + glowWidth) * xpRatio) - glowWidth;
+            int glowAlpha = Math.max(0, Math.min(255, (int) (95 * pulse)));
+            g2.setPaint(new GradientPaint(glowX, y, new Color(255, 255, 255, 0), glowX + glowWidth, y, new Color(255, 255, 255, glowAlpha)));
+            g2.fillRect(glowX, y, glowWidth, barHeight);
+
+            g2.setColor(new Color(255, 255, 255, 55));
+            g2.fillRoundRect(x, y + 2, fillWidth, barHeight / 2, arc, arc);
+            g2.setClip(oldClip);
+        }
+
+        g2.setColor(new Color(255, 255, 255, 45));
+        for (int i = 1; i < 10; i++) {
+            int markX = x + (barWidth * i / 10);
+            g2.drawLine(markX, y + 4, markX, y + barHeight - 4);
+        }
+
+        g2.setColor(new Color(255, 255, 255, 210));
         g2.setStroke(new BasicStroke(2));
-        g2.drawRoundRect(x, y, barWidth, barHeight, 10, 10);
+        g2.drawRoundRect(x, y, barWidth, barHeight, arc, arc);
+
+        String centerText = (int) Math.round(xpRatio * 100) + "%";
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15F));
+        int centerTextX = x + barWidth / 2 - (int) g2.getFontMetrics().getStringBounds(centerText, g2).getWidth() / 2;
+        g2.setColor(new Color(0, 0, 0, 170));
+        g2.drawString(centerText, centerTextX + 1, y + 17);
+        g2.setColor(Color.white);
+        g2.drawString(centerText, centerTextX, y + 16);
 
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
         String leftText = "Lv " + gp.player.level;
-        String rightText = gp.player.exp + "/" + gp.player.nextLevelExp + " XP";
-        g2.drawString(leftText, x + 10, y - 6);
+        String rightText = gp.player.exp + "/" + gp.player.nextLevelExp + " XP  (-" + xpLeft + ")";
+        g2.setColor(new Color(0, 0, 0, 170));
+        g2.drawString(leftText, x + 11, y - 5);
         int rightTextX = getXforAlignToRightText(rightText, x + barWidth);
+        g2.drawString(rightText, rightTextX + 1, y - 5);
+        g2.setColor(new Color(220, 242, 255));
+        g2.drawString(leftText, x + 10, y - 6);
         g2.drawString(rightText, rightTextX, y - 6);
+    }
+
+    private double clamp01(double value) {
+        return Math.max(0.0, Math.min(1.0, value));
     }
 
     public void drawMonsterLife() {
@@ -539,117 +602,43 @@ public class UI {
 
 
     public void drawCharacterScreen() {
-
-        // CREATE A FRAME
-        final int frameX = gp.tileSize * 2;
-        final int frameY = gp.tileSize;
-        final int frameWidth = gp.tileSize * 5;
-        final int frameHeight = gp.tileSize * 10;
+        final int frameX = gp.tileSize / 2;
+        final int frameY = gp.tileSize / 2;
+        final int frameWidth = gp.tileSize * 11;
+        final int frameHeight = gp.tileSize * 11;
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
 
-        // TEXT
         g2.setColor(Color.white);
-        g2.setFont(g2.getFont().deriveFont(32F));
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+        g2.drawString("Character Stats (All)", frameX + 18, frameY + 34);
 
-        int textX = frameX + 20;
-        int textY = frameY + gp.tileSize;
-        final int lineHeight = 35;
+        ArrayList<String> stats = gp.player.getAllCharacterStats();
+        int textStartX = frameX + 16;
+        int textStartY = frameY + 56;
+        int lineHeight = 13;
+        int usableHeight = frameHeight - 72;
+        int maxLinesPerCol = Math.max(1, usableHeight / lineHeight);
+        int colWidth = (frameWidth - 40) / 2;
 
-        // NAMES
-
-        g2.drawString("Level", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Life", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Mana", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Strength", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Dexterity", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Attack", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Defense", textX, textY);
-        textY += lineHeight;
-        g2.drawString("EXP", textX, textY);
-        textY += lineHeight;
-        g2.drawString("NextLevel", textX, textY);
-        textY += lineHeight;
-        g2.drawString("Coin", textX, textY);
-        textY += lineHeight + 10;
-        g2.drawString("Weapon", textX, textY);
-        textY += lineHeight + 15;
-        g2.drawString("Shield", textX, textY);
-
-        // VALUES
-        int tailX = (frameX + frameWidth) - 30;
-        // Reset textY
-        textY = frameY + gp.tileSize;
-        String value;
-
-        value = String.valueOf(gp.player.level);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.life + "/" + gp.player.maxLife);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-        value = String.valueOf(gp.player.mana + "/" + gp.player.maxMana);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.strength);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-        value = String.valueOf(gp.player.dexterity);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.attack);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.defense);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.exp);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.nextLevelExp);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-
-        value = String.valueOf(gp.player.coin);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
-        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 24, null);
-        textY += gp.tileSize;
-
-        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 24, null);
-
-
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 11F));
+        for (int i = 0; i < stats.size(); i++) {
+            int col = i / maxLinesPerCol;
+            if (col > 1) {
+                break;
+            }
+            int row = i % maxLinesPerCol;
+            int x = textStartX + col * colWidth;
+            int y = textStartY + row * lineHeight;
+            String line = stats.get(i);
+            if (line.startsWith("[")) {
+                g2.setColor(new Color(255, 235, 150));
+                g2.setFont(g2.getFont().deriveFont(Font.BOLD, 11F));
+            } else {
+                g2.setColor(new Color(225, 240, 255));
+                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 11F));
+            }
+            g2.drawString(line, x, y);
+        }
     }
 
     public void drawInventory(Entity entity, boolean cursor) {
@@ -764,6 +753,158 @@ public class UI {
                     textY += 32 ;
                 }
 
+            }
+        }
+    }
+
+    public void drawTalentTreePopup() {
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        int margin = 8;
+        int frameX = margin;
+        int frameY = margin;
+        int frameW = gp.screenWidth - margin * 2;
+        int frameH = gp.screenHeight - margin * 2;
+        drawSubWindow(frameX, frameY, frameW, frameH);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 34F));
+        g2.setColor(Color.white);
+        g2.drawString("Talent Tree", frameX + 24, frameY + 46);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 22F));
+        g2.setColor(new Color(255, 240, 170));
+        g2.drawString("Skill Points: " + gp.player.skillPoints, frameX + frameW - 280, frameY + 46);
+
+        int cardGap = 20;
+        int cardY = frameY + 70;
+        int cardH = frameH - 180;
+        int cardW = (frameW - 52 - cardGap * 2) / 3;
+        for (int i = 0; i < 3; i++) {
+            int cardX = frameX + 26 + i * (cardW + cardGap);
+
+            Color top;
+            Color bottom;
+            if (i == 0) {
+                top = new Color(26, 58, 88, 230);
+                bottom = new Color(10, 26, 44, 230);
+            } else if (i == 1) {
+                top = new Color(56, 42, 92, 230);
+                bottom = new Color(26, 18, 56, 230);
+            } else {
+                top = new Color(78, 48, 20, 230);
+                bottom = new Color(44, 26, 10, 230);
+            }
+            g2.setPaint(new GradientPaint(cardX, cardY, top, cardX, cardY + cardH, bottom));
+            g2.fillRoundRect(cardX, cardY, cardW, cardH, 18, 18);
+
+            if (skillTreeSelection == i) {
+                g2.setColor(new Color(255, 222, 120));
+                g2.setStroke(new BasicStroke(4));
+            } else {
+                g2.setColor(new Color(255, 255, 255, 110));
+                g2.setStroke(new BasicStroke(2));
+            }
+            g2.drawRoundRect(cardX, cardY, cardW, cardH, 18, 18);
+
+            String name = gp.player.getTreeName(i);
+            int lvl = gp.player.getTreeLevel(i);
+            g2.setColor(Color.white);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+            g2.drawString(name, cardX + 16, cardY + 34);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+            g2.setColor(new Color(255, 240, 170));
+            g2.drawString("Lv " + lvl + "/30", cardX + 16, cardY + 64);
+            drawTalentNodeGrid(i, cardX + 14, cardY + 78, cardW - 28, cardH - 102);
+        }
+
+        int selectedTree = skillTreeSelection;
+        int selectedNode = skillNodeSelection;
+        String selectedName = gp.player.getTalentName(selectedTree, selectedNode);
+        int current = gp.player.getTalentRank(selectedTree, selectedNode);
+        int max = gp.player.getTalentMaxRank(selectedTree, selectedNode);
+        int req = gp.player.getRequiredPointsForNode(selectedNode);
+        int spent = gp.player.getTreeSpentPoints(selectedTree);
+        boolean canSpend = gp.player.canSpendTalentPoint(selectedTree, selectedNode);
+
+        int detailX = frameX + 18;
+        int detailY = frameY + frameH - 98;
+        int detailW = frameW - 36;
+        int detailH = 72;
+        g2.setColor(new Color(5, 12, 18, 220));
+        g2.fillRoundRect(detailX, detailY, detailW, detailH, 12, 12);
+        g2.setColor(new Color(220, 245, 255, 180));
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(detailX, detailY, detailW, detailH, 12, 12);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 17F));
+        g2.setColor(new Color(255, 240, 170));
+        g2.drawString("Selected: " + selectedName + "  " + current + "/" + max + " | Per rank: " + gp.player.getTalentEffectPerRankText(selectedTree, selectedNode), detailX + 12, detailY + 22);
+        g2.setColor(canSpend ? new Color(190, 255, 205) : new Color(255, 210, 150));
+        g2.drawString("Requirement: " + req + " points in " + gp.player.getTreeName(selectedTree) + " (" + spent + "/" + req + ")", detailX + 12, detailY + 42);
+        g2.setColor(new Color(220, 235, 255));
+        g2.drawString("Current: " + gp.player.getTalentCurrentText(selectedTree, selectedNode), detailX + 12, detailY + 62);
+        g2.setColor(new Color(220, 255, 220));
+        g2.drawString("Next: " + gp.player.getTalentNextText(selectedTree, selectedNode), detailX + detailW / 2 + 8, detailY + 62);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16F));
+        g2.setColor(new Color(190, 230, 180));
+        g2.drawString("Controls: A/D tree, W/S talent, ENTER spend, N/ESC close", frameX + frameW - 420, frameY + frameH - 10);
+    }
+
+    private void drawTalentNodeGrid(int treeType, int x, int y, int width, int height) {
+        int cols = 2;
+        int rows = 5;
+        int gap = 8;
+        int nodeW = (width - gap) / cols;
+        int nodeH = (height - gap * (rows - 1)) / rows;
+
+        for (int n = 0; n < 10; n++) {
+            int col = n % 2;
+            int row = n / 2;
+            int nx = x + col * (nodeW + gap);
+            int ny = y + row * (nodeH + gap);
+
+            int req = gp.player.getRequiredPointsForNode(n);
+            boolean unlockedTier = gp.player.getTreeSpentPoints(treeType) >= req;
+            boolean selected = (skillTreeSelection == treeType && skillNodeSelection == n);
+
+            if (selected) {
+                g2.setColor(new Color(255, 224, 130, 230));
+                g2.fillRoundRect(nx - 2, ny - 2, nodeW + 4, nodeH + 4, 10, 10);
+            }
+
+            if (!unlockedTier) {
+                g2.setColor(new Color(40, 40, 40, 220));
+            } else {
+                g2.setColor(new Color(10, 20, 30, 180));
+            }
+            g2.fillRoundRect(nx, ny, nodeW, nodeH, 9, 9);
+
+            g2.setColor(unlockedTier ? new Color(230, 245, 255) : new Color(140, 140, 140));
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(nx, ny, nodeW, nodeH, 9, 9);
+
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 13F));
+            String title = gp.player.getTalentName(treeType, n);
+            int tw = (int) g2.getFontMetrics().getStringBounds(title, g2).getWidth();
+            if (tw > nodeW - 10 && title.length() > 10) {
+                title = title.substring(0, 10) + ".";
+            }
+            g2.drawString(title, nx + 6, ny + 17);
+
+            int current = gp.player.getTalentRank(treeType, n);
+            int max = gp.player.getTalentMaxRank(treeType, n);
+            String rankText = current + "/" + max;
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15F));
+            int rw = (int) g2.getFontMetrics().getStringBounds(rankText, g2).getWidth();
+            g2.setColor(current > 0 ? new Color(255, 230, 120) : new Color(220, 220, 220));
+            g2.drawString(rankText, nx + nodeW - rw - 6, ny + 34);
+
+            if (!unlockedTier) {
+                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 12F));
+                g2.setColor(new Color(180, 180, 180));
+                g2.drawString("Req " + req, nx + 6, ny + nodeH - 8);
             }
         }
     }

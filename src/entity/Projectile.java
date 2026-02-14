@@ -1,6 +1,7 @@
 package entity;
 
 import main.GamePanel;
+import entity.Player;
 
 public class Projectile extends Entity{
 
@@ -24,7 +25,7 @@ public class Projectile extends Entity{
         if(user == gp.player ) {
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             if(monsterIndex != 999) {
-                gp.player.damageMonster(monsterIndex, this, attack * (gp.player.level / 2), knockBackPower);
+                gp.player.damageMonster(monsterIndex, this, attack * (gp.player.level / 2.0), knockBackPower);
                 generateParticle(user.projectile, gp.monster[gp.currentMap][monsterIndex]);
                 alive = false;
             }
@@ -67,6 +68,11 @@ public class Projectile extends Entity{
         return haveResource;
     }
     public void subtractResource(Entity user) {
-        user.mana -= useCost;
+        if (user instanceof Player) {
+            Player p = (Player) user;
+            user.mana -= p.getEffectiveSpellCost(useCost);
+        } else {
+            user.mana -= useCost;
+        }
     }
 }

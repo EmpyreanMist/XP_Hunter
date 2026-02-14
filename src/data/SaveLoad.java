@@ -22,15 +22,25 @@ public class SaveLoad {
         DataStorage ds = new DataStorage();
 
         ds.level = gp.player.level;
-        ds.maxLife = gp.player.maxLife;
+        ds.maxLife = gp.player.baseMaxLife;
         ds.life = gp.player.life;
-        ds.maxMana = gp.player.maxMana;
+        ds.maxMana = gp.player.baseMaxMana;
         ds.mana = gp.player.mana;
-        ds.strength = gp.player.strength;
-        ds.dexterity = gp.player.dexterity;
+        ds.strength = gp.player.baseStrength;
+        ds.dexterity = gp.player.baseDexterity;
         ds.exp = gp.player.exp;
         ds.nextLevelExp = gp.player.nextLevelExp;
         ds.coin = gp.player.coin;
+        ds.skillPoints = gp.player.skillPoints;
+        ds.defenseTreeLevel = gp.player.defenseTreeLevel;
+        ds.mageTreeLevel = gp.player.mageTreeLevel;
+        ds.speedTreeLevel = gp.player.speedTreeLevel;
+        ds.talentRanks = new int[3][entity.Player.TALENT_NODES_PER_TREE];
+        for (int t = 0; t < 3; t++) {
+            for (int n = 0; n < entity.Player.TALENT_NODES_PER_TREE; n++) {
+                ds.talentRanks[t][n] = gp.player.talentRanks[t][n];
+            }
+        }
 
         // PLAYER INVENTORY
         for(int i = 0; i < gp.player.inventory.size(); i++) {
@@ -87,15 +97,28 @@ public class SaveLoad {
             DataStorage ds = (DataStorage) ois.readObject();
 
             gp.player.level = ds.level;
-            gp.player.maxLife = ds.maxLife;
+            gp.player.baseMaxLife = (int) Math.round(ds.maxLife);
             gp.player.life = ds.life;
-            gp.player.maxMana = ds.maxMana;
+            gp.player.baseMaxMana = ds.maxMana;
             gp.player.mana = ds.mana;
-            gp.player.strength = ds.strength;
-            gp.player.dexterity = ds.dexterity;
+            gp.player.baseStrength = ds.strength;
+            gp.player.baseDexterity = ds.dexterity;
             gp.player.exp = ds.exp;
             gp.player.nextLevelExp = ds.nextLevelExp;
             gp.player.coin = ds.coin;
+            gp.player.skillPoints = ds.skillPoints;
+            gp.player.defenseTreeLevel = ds.defenseTreeLevel;
+            gp.player.mageTreeLevel = ds.mageTreeLevel;
+            gp.player.speedTreeLevel = ds.speedTreeLevel;
+            if (ds.talentRanks != null) {
+                for (int t = 0; t < 3; t++) {
+                    for (int n = 0; n < entity.Player.TALENT_NODES_PER_TREE; n++) {
+                        gp.player.talentRanks[t][n] = ds.talentRanks[t][n];
+                    }
+                }
+            } else {
+                gp.player.rebuildTalentsFromTreeLevelsIfNeeded();
+            }
 
             // PLAYER INVENTORY
             gp.player.inventory.clear();
@@ -107,8 +130,8 @@ public class SaveLoad {
             // PLAYER EQUIPMENT
             gp.player.currentWeapon = gp.player.inventory.get(ds.currentWeaponSlot);
             gp.player.currentShield = gp.player.inventory.get(ds.currentShieldSlot);
-            gp.player.getAttack();
-            gp.player.getDefense();
+            gp.player.rebuildTalentsFromTreeLevelsIfNeeded();
+            gp.player.recalculateSkillStats();
             gp.player.getAttackImage();
 
             // OBJECTS ON MAP
@@ -146,7 +169,7 @@ public class SaveLoad {
 
         } catch (Exception e) {
             System.out.println("Load Exception");
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

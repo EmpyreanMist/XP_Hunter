@@ -86,6 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int sleepState  = 9;
     public final int mapState = 10;
     public final int cutsceneState = 11;
+    public final int talentTreeState = 12;
 
     // OTHERS
     public boolean bossBattleOn = false;
@@ -156,7 +157,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setFullScreen() {
-
         // GET LOCAL SCREEN DEVICE
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();

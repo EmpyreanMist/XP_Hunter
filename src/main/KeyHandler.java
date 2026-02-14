@@ -7,6 +7,7 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gp;
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed, spacePressed, dashPressed;
+    public boolean skill1Pressed, skill2Pressed, skill3Pressed;
 
     //DEBUG
     boolean showDebugText = false;
@@ -62,6 +63,10 @@ public class KeyHandler implements KeyListener {
         else if (gp.gameState == gp.mapState) {
             mapState(code);
         }
+        // TALENT TREE STATE
+        else if (gp.gameState == gp.talentTreeState) {
+            talentTreeState(code);
+        }
     }
 
     public void titleState(int code) {
@@ -114,6 +119,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_C) {
             gp.gameState = gp.characterState;
         }
+        if (code == KeyEvent.VK_N) {
+            gp.gameState = gp.talentTreeState;
+        }
         if (code == KeyEvent.VK_F) {
             shotKeyPressed = true;
         }
@@ -135,6 +143,15 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_SHIFT) {
             dashPressed = true;
+        }
+        if (code == KeyEvent.VK_1) {
+            skill1Pressed = true;
+        }
+        if (code == KeyEvent.VK_2) {
+            skill2Pressed = true;
+        }
+        if (code == KeyEvent.VK_3) {
+            skill3Pressed = true;
         }
         // DEBUG
         if (code == KeyEvent.VK_T) {
@@ -180,6 +197,36 @@ public class KeyHandler implements KeyListener {
             gp.player.selectItem();
         }
         playerInventory(code);
+    }
+
+    public void talentTreeState(int code) {
+        if (code == KeyEvent.VK_N || code == KeyEvent.VK_ESCAPE) {
+            gp.gameState = gp.playState;
+            return;
+        }
+        if (code == KeyEvent.VK_A) {
+            gp.ui.skillTreeSelection--;
+            if (gp.ui.skillTreeSelection < 0) gp.ui.skillTreeSelection = 2;
+            gp.playSE(9);
+        }
+        if (code == KeyEvent.VK_D) {
+            gp.ui.skillTreeSelection++;
+            if (gp.ui.skillTreeSelection > 2) gp.ui.skillTreeSelection = 0;
+            gp.playSE(9);
+        }
+        if (code == KeyEvent.VK_W) {
+            gp.ui.skillNodeSelection--;
+            if (gp.ui.skillNodeSelection < 0) gp.ui.skillNodeSelection = 9;
+            gp.playSE(9);
+        }
+        if (code == KeyEvent.VK_S) {
+            gp.ui.skillNodeSelection++;
+            if (gp.ui.skillNodeSelection > 9) gp.ui.skillNodeSelection = 0;
+            gp.playSE(9);
+        }
+        if (code == KeyEvent.VK_ENTER) {
+            gp.player.spendSkillPoint(gp.ui.skillTreeSelection, gp.ui.skillNodeSelection);
+        }
     }
 
     public void optionsState(int code) {
@@ -396,6 +443,15 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_SHIFT) {
             dashPressed = false;
+        }
+        if (code == KeyEvent.VK_1) {
+            skill1Pressed = false;
+        }
+        if (code == KeyEvent.VK_2) {
+            skill2Pressed = false;
+        }
+        if (code == KeyEvent.VK_3) {
+            skill3Pressed = false;
         }
     }
 }

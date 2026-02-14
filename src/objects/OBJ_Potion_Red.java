@@ -1,6 +1,7 @@
 package objects;
 
 import entity.Entity;
+import entity.Player;
 import main.GamePanel;
 
 public class OBJ_Potion_Red extends Entity {
@@ -32,7 +33,11 @@ public class OBJ_Potion_Red extends Entity {
     public boolean use(Entity entity) {
 
         startDialogue(this, 0);
-        entity.life += value;
+        if (entity instanceof Player) {
+            entity.life += ((Player) entity).getHealAmount(value);
+        } else {
+            entity.life += value;
+        }
         gp.playSE(2);
         return true;
     }

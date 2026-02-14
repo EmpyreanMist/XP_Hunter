@@ -7,8 +7,8 @@ public class DataStorage implements Serializable {
 
     // PLAYER STATS
     int level;
-    int maxLife;
-    int life;
+    double maxLife;
+    double life;
     int maxMana;
     int mana;
     int strength;
@@ -16,6 +16,11 @@ public class DataStorage implements Serializable {
     int exp;
     int nextLevelExp;
     int coin;
+    int skillPoints;
+    int defenseTreeLevel;
+    int mageTreeLevel;
+    int speedTreeLevel;
+    int talentRanks[][];
 
     // PLAYER INVENTORY
     ArrayList<String> itemNames = new ArrayList<>();
