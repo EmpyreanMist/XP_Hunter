@@ -157,14 +157,16 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setFullScreen() {
-        // GET LOCAL SCREEN DEVICE
+        // Borderless windowed fullscreen (not exclusive fullscreen)
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
-        gd.setFullScreenWindow(Main.window);
+        Rectangle bounds = gd.getDefaultConfiguration().getBounds();
 
-        // GET FULL SCREEN WIDTH AND HEIGHT
-        screenWidth2 = Main.window.getWidth();
-        screenHeight2 = Main.window.getHeight();
+        Main.window.setBounds(bounds);
+        Main.window.setVisible(true);
+
+        screenWidth2 = bounds.width;
+        screenHeight2 = bounds.height;
     }
 
     public void startGameThread() {

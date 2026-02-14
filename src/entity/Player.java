@@ -1361,7 +1361,7 @@ public class Player extends Entity {
 
         handleDashInput();
 
-        if (keyH.enterPressed == true && attackCanceled == false && attacking == false) {
+        if (keyH.enterPressed == true && attackCanceled == false && attacking == false && keyH.spacePressed == false && guarding == false) {
             gp.playSE(7);
             attacking = true;
             spriteCounter = 0;
