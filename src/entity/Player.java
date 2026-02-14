@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import main.GamePanel;
 import main.KeyHandler;
 import objects.*;
@@ -14,6 +15,19 @@ public class Player extends Entity {
     int standCounter = 0;
     public boolean attackCanceled = false;
     public boolean lightUpdated = false;
+    public final int dashCooldownMax = 120;
+    public int dashCooldown = 0;
+    public final int dashDistance = 72;
+    private final ArrayList<DashAfterImage> dashAfterImages = new ArrayList<>();
+
+    private static class DashAfterImage {
+        int worldX;
+        int worldY;
+        int life;
+        int maxLife;
+        String direction;
+        int spriteNum;
+    }
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
@@ -72,6 +86,7 @@ public class Player extends Entity {
         getGuardImage();
         setItems();
         setDialogue();
+        dashCooldown = 0;
 
     }
 
@@ -398,6 +413,8 @@ public class Player extends Entity {
             }
         }
 
+        handleDashInput();
+
         if (keyH.enterPressed == true && attackCanceled == false && attacking == false) {
             gp.playSE(7);
             attacking = true;
@@ -405,6 +422,7 @@ public class Player extends Entity {
         }
 
         gp.keyH.enterPressed = false;
+        gp.keyH.dashPressed = false;
 
         if(gp.keyH.shotKeyPressed == true && projectile.alive == false
                 && shotAvailableCounter == 30 && projectile.haveResource(this) == true ) {
@@ -440,6 +458,10 @@ public class Player extends Entity {
         if(shotAvailableCounter < 30) {
             shotAvailableCounter++;
         }
+        if(dashCooldown > 0) {
+            dashCooldown--;
+        }
+        updateDashAfterImages();
 
         if(life > maxLife) {
             life = maxLife;
@@ -458,6 +480,93 @@ public class Player extends Entity {
                 gp.stopMusic();
                 gp.playSE(12);
             }
+        }
+    }
+
+    private void handleDashInput() {
+
+        if (!keyH.dashPressed || dashCooldown > 0 || attacking || knockBack) {
+            return;
+        }
+
+        String dashDirection = direction;
+        if (keyH.upPressed) dashDirection = "up";
+        else if (keyH.downPressed) dashDirection = "down";
+        else if (keyH.leftPressed) dashDirection = "left";
+        else if (keyH.rightPressed) dashDirection = "right";
+
+        int previousSpeed = speed;
+        String previousDirection = direction;
+
+        direction = dashDirection;
+        int dashStep = 6;
+        speed = dashStep;
+        int trailSpacing = 12;
+        int travelledSinceTrail = 0;
+        addDashAfterImage(worldX, worldY, direction, spriteNum, 12);
+
+        int travelled = 0;
+        while (travelled < dashDistance) {
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+            gp.cChecker.checkObject(this, true);
+            gp.cChecker.checkEntity(this, gp.npc);
+            gp.cChecker.checkEntity(this, gp.monster);
+            gp.cChecker.checkEntity(this, gp.iTile);
+
+            if (collisionOn) {
+                break;
+            }
+
+            switch (direction) {
+                case "up": worldY -= dashStep; break;
+                case "down": worldY += dashStep; break;
+                case "left": worldX -= dashStep; break;
+                case "right": worldX += dashStep; break;
+            }
+            travelled += dashStep;
+            travelledSinceTrail += dashStep;
+
+            if (travelledSinceTrail >= trailSpacing) {
+                addDashAfterImage(worldX, worldY, direction, spriteNum, 10);
+                travelledSinceTrail = 0;
+            }
+        }
+
+        speed = previousSpeed;
+        direction = previousDirection;
+        dashCooldown = dashCooldownMax;
+        gp.playSE(10);
+    }
+
+    private void addDashAfterImage(int x, int y, String dir, int frame, int life) {
+        DashAfterImage afterImage = new DashAfterImage();
+        afterImage.worldX = x;
+        afterImage.worldY = y;
+        afterImage.direction = dir;
+        afterImage.spriteNum = frame;
+        afterImage.life = life;
+        afterImage.maxLife = life;
+        dashAfterImages.add(afterImage);
+    }
+
+    private void updateDashAfterImages() {
+        for (int i = dashAfterImages.size() - 1; i >= 0; i--) {
+            DashAfterImage afterImage = dashAfterImages.get(i);
+            afterImage.life--;
+            if (afterImage.life <= 0) {
+                dashAfterImages.remove(i);
+            }
+        }
+    }
+
+    private BufferedImage getWalkFrameImage(String dir, int frame) {
+        switch (dir) {
+            case "up": return (frame == 1) ? up1 : up2;
+            case "down": return (frame == 1) ? down1 : down2;
+            case "left": return (frame == 1) ? left1 : left2;
+            case "right": return (frame == 1) ? right1 : right2;
+            default: return down1;
         }
     }
 
@@ -894,6 +1003,26 @@ public class Player extends Entity {
 
         if(transparent == true) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+        }
+
+        for (int i = 0; i < dashAfterImages.size(); i++) {
+            DashAfterImage afterImage = dashAfterImages.get(i);
+            float alpha = 0.55f * ((float) afterImage.life / afterImage.maxLife);
+            if (alpha < 0f) {
+                alpha = 0f;
+            }
+
+            int afterImageScreenX = afterImage.worldX - worldX + screenX;
+            int afterImageScreenY = afterImage.worldY - worldY + screenY;
+
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g2.drawImage(getWalkFrameImage(afterImage.direction, afterImage.spriteNum), afterImageScreenX, afterImageScreenY, null);
+        }
+
+        if (transparent == true) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+        } else {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
         if(drawing == true) {
             g2.drawImage(image, tempScreenX, tempScreenY, null);

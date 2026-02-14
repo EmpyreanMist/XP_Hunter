@@ -90,6 +90,7 @@ public class UI {
         // PLAY STATE
         if (gp.gameState == gp.playState) {
             drawPlayerLife();
+            drawDashCooldown();
             drawMonsterLife();
             drawMessage();
         }
@@ -97,6 +98,7 @@ public class UI {
         // PAUSE STATE
         if (gp.gameState == gp.pauseState) {
             drawPlayerLife();
+            drawDashCooldown();
             drawPauseScreen();
         }
 
@@ -212,6 +214,33 @@ public class UI {
                 y += iconSize;
             }
         }
+    }
+
+    public void drawDashCooldown() {
+
+        int barWidth = gp.tileSize * 3;
+        int barHeight = 14;
+        int x = gp.tileSize / 2;
+        int y = gp.tileSize * 3;
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+        g2.setColor(Color.white);
+        g2.drawString("Dash [SHIFT]", x, y - 8);
+
+        g2.setColor(new Color(25, 25, 25, 220));
+        g2.fillRoundRect(x, y, barWidth, barHeight, 8, 8);
+
+        double readyRatio = 1.0 - ((double) gp.player.dashCooldown / gp.player.dashCooldownMax);
+        if (readyRatio < 0) readyRatio = 0;
+        int fillWidth = (int)(barWidth * readyRatio);
+
+        Color fillColor = (gp.player.dashCooldown == 0) ? new Color(60, 220, 110) : new Color(70, 140, 255);
+        g2.setColor(fillColor);
+        g2.fillRoundRect(x, y, fillWidth, barHeight, 8, 8);
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(x, y, barWidth, barHeight, 8, 8);
     }
 
     public void drawMonsterLife() {
@@ -913,6 +942,7 @@ public class UI {
         g2.drawString("Move", textX, textY); textY += gp.tileSize;
         g2.drawString("Confirm/Attack", textX, textY); textY += gp.tileSize;
         g2.drawString("Shoot/Cast", textX, textY); textY += gp.tileSize;
+        g2.drawString("Dash", textX, textY); textY += gp.tileSize;
         g2.drawString("Character Screen", textX, textY); textY += gp.tileSize;
         g2.drawString("Pause", textX, textY); textY += gp.tileSize;
         g2.drawString("Options", textX, textY); textY += gp.tileSize;
@@ -922,6 +952,7 @@ public class UI {
         g2.drawString("WASD", textX, textY); textY += gp.tileSize;
         g2.drawString("ENTER", textX, textY); textY += gp.tileSize;
         g2.drawString("F", textX, textY); textY += gp.tileSize;
+        g2.drawString("SHIFT", textX, textY); textY += gp.tileSize;
         g2.drawString("C", textX, textY); textY += gp.tileSize;
         g2.drawString("P", textX, textY); textY += gp.tileSize;
         g2.drawString("ESC", textX, textY); textY += gp.tileSize;
