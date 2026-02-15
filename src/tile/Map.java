@@ -34,6 +34,7 @@ public class Map extends TileManager {
             while(col < gp.maxWorldCol && row < gp.maxWorldRow) {
 
                 int tileNum = mapTileNum[i][col][row];
+                tileNum = getSafeTileNum(tileNum);
                 int x = gp.tileSize * col;
                 int y = gp.tileSize * row;
                 g2.drawImage(tile[tileNum].image, x, y, null);

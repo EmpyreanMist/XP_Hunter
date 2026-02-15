@@ -1,15 +1,14 @@
 package tile;
 
-import main.GamePanel;
-import main.UtilityTool;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import main.GamePanel;
+import main.UtilityTool;
 
 public class TileManager {
 
@@ -19,6 +18,8 @@ public class TileManager {
     boolean drawPath = true;
     ArrayList<String> fileNames = new ArrayList<>();
     ArrayList<String> collisionStatus = new ArrayList<>();
+    int missingTileWarningCount = 0;
+    private static final String WORLD_SIZE_REFERENCE_MAP = "/maps/worldV4.txt";
 
     public TileManager(GamePanel gp) {
 
@@ -26,6 +27,9 @@ public class TileManager {
 
         // READ TILE DATA FILE
         InputStream is = getClass().getResourceAsStream("/maps/tiledata.txt");
+        if (is == null) {
+            throw new IllegalStateException("Missing resource: /maps/tiledata.txt");
+        }
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
         // GETTING TILE NAMES AND COLLISION INFO FROM THE FILE
@@ -43,19 +47,40 @@ public class TileManager {
         }
 
         // INITIALIZE THE TILE NAMES AND COLLISION INFO FROM THE FILE
-        tile = new Tile[50];
+        tile = new Tile[fileNames.size()];
         getTileImage();
 
-        // GET TEH maxWorldCol & Row
-        is = getClass().getResourceAsStream("/maps/worldmap.txt");
+        // GET maxWorldCol & Row from the largest map we use at runtime
+        is = getClass().getResourceAsStream(WORLD_SIZE_REFERENCE_MAP);
+        if (is == null) {
+            throw new IllegalStateException("Missing world size reference map: " + WORLD_SIZE_REFERENCE_MAP);
+        }
         br = new BufferedReader(new InputStreamReader(is));
 
         try {
-            String line2 = br.readLine();
-            String maxTile[] = line2.split(" ");
+            String line2;
+            int detectedRows = 0;
+            int detectedCols = 0;
 
-            gp.maxWorldCol = maxTile.length;
-            gp.maxWorldRow = maxTile.length;
+            while ((line2 = br.readLine()) != null) {
+                line2 = line2.trim();
+                if (line2.isEmpty()) {
+                    continue;
+                }
+
+                String[] tilesInRow = line2.split("\\s+");
+                if (detectedCols == 0) {
+                    detectedCols = tilesInRow.length;
+                }
+                detectedRows++;
+            }
+
+            if (detectedCols == 0 || detectedRows == 0) {
+                throw new IllegalStateException("Invalid map data in " + WORLD_SIZE_REFERENCE_MAP);
+            }
+
+            gp.maxWorldCol = detectedCols;
+            gp.maxWorldRow = detectedRows;
             mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
             br.close();
@@ -68,6 +93,7 @@ public class TileManager {
         loadMap("/maps/indoor01.txt", 1);
         loadMap("/maps/dungeon01.txt", 2);
         loadMap("/maps/dungeon02.txt", 3);
+        loadMap("/maps/worldV4.txt", 4);
 
     }
 
@@ -99,7 +125,20 @@ public class TileManager {
 
         try {
             tile[index] = new Tile();
-            tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName));
+            InputStream imageStream = getClass().getResourceAsStream("/tiles/" + imageName);
+            if (imageStream == null) {
+                if (missingTileWarningCount < 10) {
+                    System.err.println("Missing tile image: /tiles/" + imageName + " (fallback to /tiles/000.png)");
+                } else if (missingTileWarningCount == 10) {
+                    System.err.println("More missing tile images found. Additional warnings are suppressed.");
+                }
+                missingTileWarningCount++;
+                imageStream = getClass().getResourceAsStream("/tiles/000.png");
+            }
+            if (imageStream == null) {
+                throw new IllegalStateException("Missing fallback tile image: /tiles/000.png");
+            }
+            tile[index].image = ImageIO.read(imageStream);
             tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
             tile[index].collision = collision;
         } catch (IOException e) {
@@ -111,33 +150,38 @@ public class TileManager {
 
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
+            if (is == null) {
+                throw new IllegalStateException("Missing map resource: " + filePath);
+            }
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-            int col = 0;
             int row = 0;
 
-            while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
-
+            while (row < gp.maxWorldRow) {
                 String line = br.readLine();
-
-                while (col < gp.maxWorldCol) {
-
-                    String numbers[] = line.split(" ");
-
-                    int num = Integer.parseInt(numbers[col]);
-
-                    mapTileNum[map][col][row] = num;
-                    col++;
+                if (line == null) {
+                    break;
                 }
-                if (col == gp.maxWorldCol) {
-                    col = 0;
+
+                line = line.trim();
+                if (line.isEmpty()) {
                     row++;
+                    continue;
                 }
+
+                String[] numbers = line.split("\\s+");
+                int maxColsToRead = Math.min(gp.maxWorldCol, numbers.length);
+
+                for (int col = 0; col < maxColsToRead; col++) {
+                    int num = Integer.parseInt(numbers[col]);
+                    mapTileNum[map][col][row] = num;
+                }
+
+                row++;
             }
             br.close();
 
         } catch (Exception e) {
-
+            throw new RuntimeException("Failed loading map: " + filePath, e);
         }
     }
 
@@ -150,6 +194,7 @@ public class TileManager {
         while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
 
             int tileNum = mapTileNum[gp.currentMap][worldCol][worldRow];
+            tileNum = getSafeTileNum(tileNum);
 
             int worldX = worldCol * gp.tileSize;
             int worldY = worldRow * gp.tileSize;
@@ -188,5 +233,17 @@ public class TileManager {
             }
         }*/
 
+    }
+
+    public int getSafeTileNum(int tileNum) {
+        if (tileNum < 0 || tileNum >= tile.length || tile[tileNum] == null) {
+            return 0;
+        }
+        return tileNum;
+    }
+
+    public boolean isTileCollision(int tileNum) {
+        int safeTileNum = getSafeTileNum(tileNum);
+        return tile[safeTileNum] != null && tile[safeTileNum].collision;
     }
 }

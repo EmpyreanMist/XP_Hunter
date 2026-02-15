@@ -22,8 +22,6 @@ public class CollisionChecker {
         int entityTopRow = entityTopWorldY / gp.tileSize;
         int entityBottomRow = entityBottomWorldY / gp.tileSize;
 
-        int tileNum1, tileNum2;
-
         // Use a temporal direction when it's being knockbacked
         String direction = entity.direction;
         if(entity.knockBack == true) {
@@ -33,37 +31,39 @@ public class CollisionChecker {
         switch (direction) {
             case "up":
                 entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                if (hasCollisionAt(entityLeftCol, entityTopRow) || hasCollisionAt(entityRightCol, entityTopRow)) {
                     entity.collisionOn = true;
                 }
                 break;
             case "down":
                 entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                if (hasCollisionAt(entityLeftCol, entityBottomRow) || hasCollisionAt(entityRightCol, entityBottomRow)) {
                     entity.collisionOn = true;
                 }
                 break;
             case "left":
                 entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                if (hasCollisionAt(entityLeftCol, entityTopRow) || hasCollisionAt(entityLeftCol, entityBottomRow)) {
                     entity.collisionOn = true;
                 }
                 break;
             case "right":
                 entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                if (hasCollisionAt(entityRightCol, entityTopRow) || hasCollisionAt(entityRightCol, entityBottomRow)) {
                     entity.collisionOn = true;
                 }
                 break;
         }
+    }
+
+    private boolean hasCollisionAt(int col, int row) {
+
+        if (col < 0 || row < 0 || col >= gp.maxWorldCol || row >= gp.maxWorldRow) {
+            return true;
+        }
+
+        int tileNum = gp.tileM.mapTileNum[gp.currentMap][col][row];
+        return gp.tileM.isTileCollision(tileNum);
     }
 
     public int checkObject(Entity entity, boolean player) {
